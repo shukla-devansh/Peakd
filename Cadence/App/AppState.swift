@@ -1,5 +1,5 @@
 //  AppState.swift
-//  App-wide UI state shared through the environment.
+//  App-wide UI state and long-lived services, shared through the environment.
 
 import Observation
 
@@ -11,4 +11,5 @@ enum AppTab: Hashable, CaseIterable {
 @MainActor
 final class AppState {
     var selectedTab: AppTab = .home
+    let permissions = PermissionsService()
 }

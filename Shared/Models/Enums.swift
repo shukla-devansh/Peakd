@@ -18,6 +18,16 @@ enum TrainingGoal: String, Codable, CaseIterable, Identifiable, Sendable {
         }
     }
 
+    /// Profile row value: "Strength · 4/wk".
+    var shortTitle: String {
+        switch self {
+        case .strength: "Strength"
+        case .muscle:   "Muscle"
+        case .fitness:  "Fitness"
+        case .lean:     "Lean"
+        }
+    }
+
     var subtitle: String {
         switch self {
         case .strength: "Heavier weights, lower reps"

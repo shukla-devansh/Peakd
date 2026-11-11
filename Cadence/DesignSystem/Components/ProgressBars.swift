@@ -25,13 +25,17 @@ struct LinearProgressBar: View {
     }
 }
 
+/// Segmented progress: onboarding steps, and "0 of 3 workouts logged" on the HomeEmpty fatigue card.
 struct StepProgressBar: View {
-    /// 1-based
+    /// Number of filled segments.
     let step: Int
     let total: Int
+    var spacing: CGFloat = 6
+    /// Defaults to "Setup progress, step N of M".
+    var accessibilityText: String?
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: spacing) {
             ForEach(1...max(total, 1), id: \.self) { index in
                 Capsule()
                     .fill(index <= step ? Palette.accentText : Palette.line)
@@ -39,7 +43,7 @@ struct StepProgressBar: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Setup progress, step \(step) of \(total)")
+        .accessibilityLabel(accessibilityText ?? "Setup progress, step \(step) of \(total)")
     }
 }
 
@@ -50,6 +54,7 @@ struct StepProgressBar: View {
             StepProgressBar(step: 1, total: 3)
             Text("Step 1 of 3").font(.cadFootnote).foregroundStyle(Palette.textSecondary)
         }
+        StepProgressBar(step: 0, total: 3, spacing: Space.xxs, accessibilityText: "0 of 3 workouts logged")
     }
     .previewSurface()
 }

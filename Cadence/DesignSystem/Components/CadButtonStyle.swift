@@ -10,6 +10,8 @@ struct CadButtonStyle: ButtonStyle {
         case primary
         /// "Add exercise"
         case secondary
+        /// "Edit plan" inside a card: elevated fill so it reads against the surface
+        case elevated
         /// "Cancel workout"
         case destructive
         /// "Skip" on the rest bar
@@ -75,7 +77,7 @@ private struct CadButtonBody: View {
     }
 
     private var hasBorder: Bool {
-        kind == .secondary || kind == .neutral
+        kind == .secondary || kind == .neutral || kind == .elevated
     }
 
     private var foreground: Color {
@@ -83,6 +85,7 @@ private struct CadButtonBody: View {
         switch kind {
         case .primary:     return .white
         case .secondary:   return Palette.text
+        case .elevated:    return Palette.text
         case .destructive: return Palette.danger
         case .tinted:      return Palette.accentText
         case .neutral:     return Palette.text
@@ -93,6 +96,7 @@ private struct CadButtonBody: View {
         switch kind {
         case .primary:     return isEnabled ? Palette.accent : Palette.elevated
         case .secondary:   return Palette.surface
+        case .elevated:    return Palette.elevated
         case .destructive: return .clear
         case .tinted:      return Palette.accent.opacity(0.2)
         case .neutral:     return Palette.elevated
@@ -117,7 +121,7 @@ extension ButtonStyle where Self == CadButtonStyle {
         Button("Save set") {}.buttonStyle(.cadPrimary).disabled(true)
         HStack(spacing: Space.xs) {
             Button("Start workout") {}.buttonStyle(.cad(.primary, size: .compact))
-            Button("Edit plan") {}.buttonStyle(.cad(.secondary, size: .compact, fullWidth: false))
+            Button("Edit plan") {}.buttonStyle(.cad(.elevated, size: .compact, fullWidth: false))
         }
         HStack(spacing: 6) {
             Button("−15") {}.buttonStyle(.cad(.neutral, size: .small, fullWidth: false))

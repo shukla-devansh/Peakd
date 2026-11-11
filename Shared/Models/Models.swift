@@ -61,6 +61,12 @@ final class UserProfile {
         set { unitRaw = newValue.rawValue }
     }
 
+    /// Equipment picked on the Equipment board (bodyweight is implied, never stored).
+    var equipmentSet: Set<Equipment> {
+        get { Set(equipment.compactMap(Equipment.init(rawValue:))).subtracting([.bodyweight]) }
+        set { equipment = Equipment.selectable.filter(newValue.contains).map(\.rawValue) }
+    }
+
     /// Selected equipment plus bodyweight, which is always available.
     var availableEquipment: Set<Equipment> {
         Set(equipment.compactMap(Equipment.init(rawValue:))).union([.bodyweight])
@@ -69,6 +75,9 @@ final class UserProfile {
     /// Allowed range on the Equipment board: 30 s – 5 min in 15 s steps.
     static let restRange: ClosedRange<Int> = 30...300
     static let restStep = 15
+
+    /// Days-per-week choices on the Onboarding board.
+    static let daysOptions = [2, 3, 4, 5, 6]
 }
 
 // MARK: - Exercise

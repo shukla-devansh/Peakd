@@ -32,6 +32,15 @@ extension View {
     func cadScreenBackground() -> some View {
         self.background(Palette.background.ignoresSafeArea())
     }
+
+    /// For screens without a navigation bar: keeps scrolled content from showing through the status bar.
+    func cadStatusBarBackground() -> some View {
+        self.safeAreaInset(edge: .top, spacing: 0) {
+            Color.clear
+                .frame(height: 0)
+                .background(Palette.background.ignoresSafeArea(edges: .top))
+        }
+    }
 }
 
 #Preview("Cards") {

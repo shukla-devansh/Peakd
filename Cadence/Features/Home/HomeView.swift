@@ -13,15 +13,20 @@ struct HomeView: View {
     private var finished: [Workout]
 
     // Skip objects deleted by "Delete all data" while this view is still on screen.
-    private var profile: UserProfile? { profiles.first { !$0.isDeleted } }
+    private var profile: UserProfile? { profiles.first { !$0.isGone } }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     header
-                    if let routine = routines.first(where: { !$0.isDeleted }), let profile {
-                        StarterPlanCard(routine: routine, profile: profile) {
+                    if let routine = routines.first(where: { !$0.isGone }), let profile {
+                        StarterPlanCard(
+                            name: routine.name,
+                            meta: StarterPlanCard.meta(for: routine, defaultRest: profile.defaultRestSeconds),
+                            explanation: StarterPlan.explanation(daysPerWeek: profile.daysPerWeek,
+                                                                 equipment: profile.availableEquipment)
+                        ) {
                             appState.selectedTab = .workout
                         } onEdit: {
                             appState.selectedTab = .workout
@@ -80,9 +85,12 @@ struct HomeView: View {
     }
 }
 
+/// Takes plain values, not models: a view holding a model redraws on its own when that model is
+/// deleted, and reading a deleted model traps ("Delete all data").
 struct StarterPlanCard: View {
-    let routine: Routine
-    let profile: UserProfile
+    let name: String
+    let meta: String
+    let explanation: String
     let onStart: () -> Void
     let onEdit: () -> Void
 
@@ -90,14 +98,14 @@ struct StarterPlanCard: View {
         VStack(alignment: .leading, spacing: 10) {
             StatusChip("Starter plan", kind: .ai, compact: true)
             VStack(alignment: .leading, spacing: 2) {
-                Text(routine.name)
+                Text(name)
                     .font(.cadTitle)
                     .foregroundStyle(Palette.text)
                 Text(meta)
                     .font(.cadSubhead)
                     .foregroundStyle(Palette.textSecondary)
             }
-            Text(StarterPlan.explanation(daysPerWeek: profile.daysPerWeek, equipment: profile.availableEquipment))
+            Text(explanation)
                 .font(.cadFootnote)
                 .foregroundStyle(Palette.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -115,9 +123,11 @@ struct StarterPlanCard: View {
         .accessibilityLabel("Your first workout")
     }
 
-    private var meta: String {
+    /// "5 exercises · about 45 min"
+    @MainActor
+    static func meta(for routine: Routine, defaultRest: Int) -> String {
         let count = routine.items.count
-        let minutes = StarterPlan.estimatedMinutes(for: routine, defaultRest: profile.defaultRestSeconds)
+        let minutes = StarterPlan.estimatedMinutes(for: routine, defaultRest: defaultRest)
         return "\(count) \(count == 1 ? "exercise" : "exercises") · about \(minutes) min"
     }
 }

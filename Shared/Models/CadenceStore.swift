@@ -5,6 +5,13 @@
 import Foundation
 import SwiftData
 
+extension PersistentModel {
+    /// Deleted, or detached from its context once the delete was saved. `isDeleted` alone turns
+    /// false after a save, yet reading the model's properties then traps. Check this before
+    /// reading a model a view may still hold after "Delete all data".
+    var isGone: Bool { isDeleted || modelContext == nil }
+}
+
 enum CadenceStore {
     static var models: [any PersistentModel.Type] {
         [

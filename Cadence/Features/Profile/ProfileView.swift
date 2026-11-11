@@ -10,7 +10,7 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if let profile = profiles.first(where: { !$0.isDeleted }) {
+                if let profile = profiles.first(where: { !$0.isGone }) {
                     ProfileForm(profile: profile)
                 } else {
                     // Only reachable for a moment while "Delete all data" returns to onboarding.
@@ -35,6 +35,15 @@ private struct ProfileForm: View {
     private var permissions: PermissionsService { appState.permissions }
 
     var body: some View {
+        // Same reason as StarterPlanCard: don't read a profile "Delete all data" just removed.
+        if profile.isGone {
+            Color.clear
+        } else {
+            form
+        }
+    }
+
+    private var form: some View {
         List {
             Section {
                 NavigationLink {

@@ -52,6 +52,8 @@ Config/                   Info.plist partials + entitlements (referenced by buil
 - Bundle IDs and the App Group all derive from the `BUNDLE_ID_PREFIX` build setting (project level). For a device, set your Team and change that one setting.
 - The progress screen type is `ProgressOverviewView` (not `ProgressView`, which would shadow SwiftUI's).
 - Building any scheme needs the watchOS simulator runtime installed (the iOS app embeds the Watch app).
+- Deleting SwiftData models: a child view holding a model redraws on its own after the delete and traps when it reads it (`isDeleted` is false again after save). Pass plain values to child views where you can; otherwise check `model.isGone` (in CadenceStore.swift) before reading.
+- SwiftData autosave can lag by seconds: call `context.save()` after user edits.
 
 ## Data model (SwiftData)
 - `UserProfile`: goal, experience, daysPerWeek, equipment [String], unit (kg/lb), defaultRestSeconds, toggles (restAlerts, voiceLogging, aiSuggestions)

@@ -7,11 +7,11 @@ The design is final. Build what the design shows; don't redesign it.
 ## Read first
 1. `docs/DESIGN_SPEC.md` — every screen, its states, navigation and behaviour. This is the source of truth.
 2. `design/screens/*.dc.html` — the exact visual reference for each screen (HTML with inline styles). Read the markup for spacing, sizes, copy and colours. Ignore the `<script>`/`sc-for` mechanics; the arrays inside `renderVals()` are sample data.
-3. `Cadence/DesignSystem/Theme.swift` — design tokens. Use them; never put raw hex values in views.
+3. `Shared/DesignSystem/Theme.swift` — design tokens. Use them; never put raw hex values in views.
 4. `docs/synopsis.pdf` — the original academic spec (features §3.1–3.8).
 
 ## Stack (decided)
-- Xcode 27, Swift 6 (strict concurrency), SwiftUI only, no UIKit unless unavoidable.
+- Xcode 26.3+ (built and tested on 26.3), Swift 6 (strict concurrency), SwiftUI only, no UIKit unless unavoidable.
 - **Deployment target: iOS 26.0 / watchOS 26.0.** It's needed for SpeechAnalyzer and the Foundation Models framework.
 - Persistence: SwiftData (`@Model`), with a shared App Group container so the Watch and widgets can read it.
 - State: `@Observable` view models, `@MainActor` where they touch UI.
@@ -26,10 +26,15 @@ The design is final. Build what the design shows; don't redesign it.
 
 ## Architecture
 ```
+Shared/                   Compiled into the iOS app, Watch app AND widget (one synchronized folder, 3 targets)
+  DesignSystem/           Theme.swift (tokens)
+  Models/                 SwiftData models, enums, CadenceStore (container)
+  Formatting/             WeightFormatter (all weight display/parsing)
+  LiveActivity/           RestTimerAttributes (#if os(iOS))
+  AppGroup.swift
 Cadence/                  iOS app target
   App/                    CadenceApp, RootView (TabView), AppState
-  DesignSystem/           Theme.swift, Components/*.swift
-  Models/                 SwiftData models
+  DesignSystem/           Components/*.swift (iOS only)
   Features/
     Onboarding/ Home/ Workout/ ActiveWorkout/ Voice/ Rest/
     Summary/ Plan/ Fatigue/ Progress/ History/ Exercises/ Profile/
@@ -39,7 +44,14 @@ Cadence/                  iOS app target
 CadenceWatch/             watchOS app (3 screens on the Watch board)
 CadenceWidgets/           Live Activity for the rest timer
 CadenceTests/             Engine + parser unit tests (Swift Testing)
+Config/                   Info.plist partials + entitlements (referenced by build settings)
 ```
+
+### Project notes
+- The Xcode project uses synchronized folders: add files on disk and they join the folder's target(s). Code needed by the Watch or widget goes in `Shared/`.
+- Bundle IDs and the App Group all derive from the `BUNDLE_ID_PREFIX` build setting (project level). For a device, set your Team and change that one setting.
+- The progress screen type is `ProgressOverviewView` (not `ProgressView`, which would shadow SwiftUI's).
+- Building any scheme needs the watchOS simulator runtime installed (the iOS app embeds the Watch app).
 
 ## Data model (SwiftData)
 - `UserProfile`: goal, experience, daysPerWeek, equipment [String], unit (kg/lb), defaultRestSeconds, toggles (restAlerts, voiceLogging, aiSuggestions)

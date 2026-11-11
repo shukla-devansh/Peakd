@@ -27,6 +27,7 @@ enum Palette {
     static let elevated   = Color(hex: 0x1B1F26)   // Sheets, inputs, pressed rows
     static let line       = Color(hex: 0x262B33)   // Dividers, card borders
     static let lineStrong = Color(hex: 0x3A414D)   // Pending-state outlines, grabber
+    static let outline    = Color(hex: 0x5A6472)   // Active-set check box, unselected radio ring
     static let tabBar     = Color(hex: 0x0F1217)   // Only if a custom bar is ever needed
 
     // Text
@@ -50,6 +51,10 @@ enum Palette {
     static let dangerTint  = danger.opacity(0.16)
     static let recordTint  = record.opacity(0.16)
     static let accentTint  = accent.opacity(0.18)
+
+    // AI callout card ("Why this plan") and selected radio card
+    static let calloutFill   = accent.opacity(0.12)
+    static let calloutBorder = accentText.opacity(0.35)
 }
 
 // MARK: - Spacing (4 pt grid)
@@ -91,12 +96,14 @@ enum Size {
 
 extension Font {
     static let cadLargeTitle = Font.largeTitle.weight(.bold)          // 34 bold
+    static let cadScreenTitle = Font.title.weight(.bold)              // 28 bold, Home / onboarding headers
     static let cadTitle      = Font.title2.weight(.bold)              // 22 bold
     static let cadHeadline   = Font.headline                          // 17 semibold
     static let cadBody       = Font.body                              // 17 regular
     static let cadSubhead    = Font.subheadline                       // 15
     static let cadFootnote   = Font.footnote                          // 13
     static let cadCaption    = Font.caption.weight(.semibold)         // 12, uppercase section labels
+    static let cadLabel      = Font.caption                           // 12 regular, tile labels, meta lines
     /// Set numbers: "45.0 × 8"
     static let cadSetNumber  = Font.title3.weight(.semibold).monospacedDigit()
     /// Big timers (rest ring, lock screen)

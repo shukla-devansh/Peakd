@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Progress · data table</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<div style="box-sizing: border-box; padding: 56px 16px 0; display: flex; flex-direction: column; gap: 16px">
+
+<header style="display: flex; flex-direction: column">
+<a href="Progress.dc.html" aria-label="Back to progress" style="width: 44px; height: 44px; margin-left: -12px; display: flex; align-items: center; justify-content: center; color: #F4F6F8"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.4px">Weekly volume</h1>
+<span style="font-size: 15px; color: #A3ACB9">Same data as the chart · last 6 weeks</span>
+</header>
+
+<table style="width: 100%; border-collapse: separate; border-spacing: 0; background: #14171C; border: 1px solid #262B33; border-radius: 16px; overflow: hidden; font-variant-numeric: tabular-nums">
+<caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Weekly training volume in kilograms, sessions and change from the week before</caption>
+<thead>
+<tr>
+<th scope="col" style="padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #A3ACB9; border-bottom: 1px solid #262B33">Week of</th>
+<th scope="col" style="padding: 12px 8px; text-align: right; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #A3ACB9; border-bottom: 1px solid #262B33">kg</th>
+<th scope="col" style="padding: 12px 8px; text-align: right; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #A3ACB9; border-bottom: 1px solid #262B33">Sessions</th>
+<th scope="col" style="padding: 12px 14px; text-align: right; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #A3ACB9; border-bottom: 1px solid #262B33">Change</th>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{weeks}}" as="w" hint-placeholder-count="6">
+<tr>
+<th scope="row" style="height: 48px; padding: 0 14px; text-align: left; font-size: 15px; font-weight: 500; border-bottom: {{w.line}}">{{w.week}}</th>
+<td style="padding: 0 8px; text-align: right; font-size: 15px; font-weight: 600; border-bottom: {{w.line}}">{{w.kg}}</td>
+<td style="padding: 0 8px; text-align: right; font-size: 15px; color: #A3ACB9; border-bottom: {{w.line}}">{{w.sessions}}</td>
+<td style="padding: 0 14px; text-align: right; font-size: 15px; font-weight: 600; color: {{w.color}}; border-bottom: {{w.line}}">{{w.change}}</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 600">Sets by muscle group</h2>
+<table style="width: 100%; border-collapse: separate; border-spacing: 0; background: #14171C; border: 1px solid #262B33; border-radius: 16px; overflow: hidden; font-variant-numeric: tabular-nums">
+<caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Share of working sets by muscle group, last 30 days</caption>
+<thead>
+<tr>
+<th scope="col" style="padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #A3ACB9; border-bottom: 1px solid #262B33">Muscle</th>
+<th scope="col" style="padding: 12px 14px; text-align: right; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #A3ACB9; border-bottom: 1px solid #262B33">Share of sets</th>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{muscles}}" as="m" hint-placeholder-count="5">
+<tr>
+<th scope="row" style="height: 44px; padding: 0 14px; text-align: left; font-size: 15px; font-weight: 500; border-bottom: {{m.line}}">{{m.name}}</th>
+<td style="padding: 0 14px; text-align: right; font-size: 15px; font-weight: 600; border-bottom: {{m.line}}">{{m.pct}}%</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+
+<button style="height: 48px; border-radius: 14px; background: #14171C; border: 1px solid #262B33; color: #F4F6F8; font-size: 17px; font-weight: 600; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"></path></svg>Export CSV</button>
+
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const raw = [
+['2 Nov', 48700, 5], ['26 Oct', 46100, 4], ['19 Oct', 44300, 4],
+['12 Oct', 39800, 3], ['5 Oct', 41500, 4], ['28 Sep', 38200, 3]
+];
+const weeks = raw.map((r, i) => {
+const prev = raw[i + 1];
+const pct = prev ? Math.round((r[1] - prev[1]) / prev[1] * 100) : null;
+return {
+week: r[0], kg: r[1].toLocaleString('en-US'), sessions: String(r[2]),
+change: pct === null ? '–' : (pct > 0 ? '▲ +' + pct + '%' : '▼ ' + pct + '%'),
+color: pct === null ? '#A3ACB9' : (pct >= 0 ? '#34D399' : '#F5A524'),
+line: i === raw.length - 1 ? 'none' : '1px solid #262B33'
+};
+});
+const m = [['Legs', 28], ['Chest', 24], ['Back', 22], ['Shoulders', 14], ['Arms', 12]];
+const muscles = m.map((x, i) => ({ name: x[0], pct: x[1], line: i === m.length - 1 ? 'none' : '1px solid #262B33' }));
+return { weeks, muscles };
+}
+}
+</script>
+</body>
+</html>

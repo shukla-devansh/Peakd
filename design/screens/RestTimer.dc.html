@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rest timer</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<div style="box-sizing: border-box; height: 100%; padding: 56px 16px 34px; display: flex; flex-direction: column; gap: 16px">
+
+<header style="display: flex; align-items: center; justify-content: space-between; height: 44px">
+<a href="Active.dc.html" aria-label="Back to workout" style="width: 44px; height: 44px; margin-left: -10px; display: flex; align-items: center; justify-content: center; color: #F4F6F8"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a>
+<div style="display: flex; flex-direction: column; align-items: center"><span style="font-size: 17px; font-weight: 600">Rest</span><span style="font-size: 13px; color: #A3ACB9">Bench press · after set 3</span></div>
+<span style="width: 44px"></span>
+</header>
+
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px">
+<div role="timer" aria-label="{{a11y}}" style="position: relative; width: 260px; height: 260px">
+<svg width="260" height="260" viewBox="0 0 260 260" aria-hidden="true" style="transform: rotate(-90deg)">
+<circle cx="130" cy="130" r="116" fill="none" stroke="#262B33" stroke-width="12"></circle>
+<circle cx="130" cy="130" r="116" fill="none" stroke="#7FA6FF" stroke-width="12" stroke-linecap="round" stroke-dasharray="728.85" stroke-dashoffset="{{offset}}"></circle>
+</svg>
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">
+<span style="font-size: 64px; font-weight: 700; letter-spacing: -1px; font-variant-numeric: tabular-nums">{{left}}</span>
+<span style="font-size: 15px; color: #A3ACB9; font-variant-numeric: tabular-nums">of {{total}}</span>
+</div>
+</div>
+
+<div style="display: flex; gap: 10px">
+<button onClick="{{minus}}" style="width: 88px; height: 52px; border-radius: 14px; background: #14171C; border: 1px solid #262B33; color: #F4F6F8; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer">−15 s</button>
+<button onClick="{{plus}}" style="width: 88px; height: 52px; border-radius: 14px; background: #14171C; border: 1px solid #262B33; color: #F4F6F8; font-size: 17px; font-weight: 600; font-family: inherit; cursor: pointer">+15 s</button>
+<a href="Active.dc.html" style="width: 104px; height: 52px; border-radius: 14px; background: #2B64F0; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Skip rest</a>
+</div>
+</div>
+
+<section aria-label="Up next" style="background: #14171C; border: 1px solid #262B33; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #A3ACB9">Up next</span>
+<div style="display: flex; align-items: center; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 600">Bench press · set 4</span><span style="font-size: 13px; color: #A3ACB9">Last time 40 × 9</span></div>
+<span style="font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums">42.5 × 10</span>
+</div>
+</section>
+
+<div style="display: flex; flex-direction: column; background: #14171C; border: 1px solid #262B33; border-radius: 16px">
+<div style="display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 14px; border-bottom: 1px solid #262B33">
+<span style="font-size: 17px">Rest for bench press</span>
+<span style="font-size: 17px; color: #A3ACB9; font-variant-numeric: tabular-nums">2:00</span>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 14px">
+<span id="alert-label" style="font-size: 17px">Sound and haptic at zero</span>
+<button role="switch" aria-labelledby="alert-label" aria-checked="{{alertOn}}" onClick="{{toggleAlert}}" style="width: 51px; height: 31px; border-radius: 16px; border: none; padding: 2px; background: {{switchBg}}; display: flex; justify-content: {{switchJustify}}; cursor: pointer"><span style="width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF"></span></button>
+</div>
+</div>
+
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const st = this.state || {};
+const total = st.total || 120;
+const elapsed = 48;
+const left = Math.max(0, total - elapsed);
+const fmt = (s) => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+const C = 728.85;
+const alert = st.alert !== false;
+return {
+left: fmt(left), total: fmt(total),
+offset: (C * (1 - left / total)).toFixed(1),
+a11y: 'Rest timer, ' + Math.floor(left / 60) + ' minutes ' + (left % 60) + ' seconds left',
+minus: () => this.setState({ total: Math.max(elapsed + 15, total - 15) }),
+plus: () => this.setState({ total: Math.min(600, total + 15) }),
+alertOn: alert ? 'true' : 'false',
+switchBg: alert ? '#34D399' : '#3A414D',
+switchJustify: alert ? 'flex-end' : 'flex-start',
+toggleAlert: () => this.setState({ alert: !alert })
+};
+}
+}
+</script>
+</body>
+</html>

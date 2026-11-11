@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Routine editor</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<div style="box-sizing: border-box; padding: 56px 16px 0; display: flex; flex-direction: column; gap: 14px">
+
+<header style="display: flex; align-items: center; justify-content: space-between; height: 44px">
+<a href="Start.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 17px; text-decoration: none">Cancel</a>
+<span style="font-size: 17px; font-weight: 600">Edit routine</span>
+<a href="Start.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 17px; font-weight: 600; text-decoration: none">Save</a>
+</header>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="routine-name" style="font-size: 13px; color: #A3ACB9">Routine name</label>
+<input id="routine-name" value="Push day" style="height: 48px; box-sizing: border-box; padding: 0 14px; border-radius: 12px; background: #1B1F26; border: 1px solid #262B33; color: #F4F6F8; font-size: 17px; font-weight: 600; font-family: inherit">
+</div>
+
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 17px; font-weight: 600">Exercises</h2>
+<span style="font-size: 13px; color: #A3ACB9; font-variant-numeric: tabular-nums">{{count}} · about {{mins}} min</span>
+</div>
+
+<section aria-label="Exercises in this routine" style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{items}}" as="e" hint-placeholder-count="5">
+<div style="display: flex; align-items: center; gap: 4px; min-height: 68px; box-sizing: border-box; padding: 8px 4px 8px 14px; background: #14171C; border: 1px solid #262B33; border-radius: 14px">
+<span style="width: 24px; font-size: 15px; font-weight: 600; color: #A3ACB9; font-variant-numeric: tabular-nums; flex: none">{{e.n}}</span>
+<div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0"><span style="font-size: 17px; font-weight: 600">{{e.name}}</span><span style="font-size: 13px; color: #A3ACB9; font-variant-numeric: tabular-nums">{{e.meta}}</span></div>
+<button onClick="{{e.up}}" disabled="{{e.isFirst}}" aria-label="Move {{e.name}} up" style="width: 44px; height: 44px; border: none; border-radius: 10px; background: none; color: {{e.upColor}}; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button>
+<button onClick="{{e.down}}" disabled="{{e.isLast}}" aria-label="Move {{e.name}} down" style="width: 44px; height: 44px; border: none; border-radius: 10px; background: none; color: {{e.downColor}}; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+<button onClick="{{e.remove}}" aria-label="Remove {{e.name}}" style="width: 44px; height: 44px; border: none; border-radius: 10px; background: none; color: #F2545B; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"></path></svg></button>
+</div>
+</sc-for>
+</section>
+
+<a href="AddExercise.dc.html" style="height: 52px; border-radius: 14px; background: #14171C; border: 1px solid #262B33; color: #F4F6F8; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; box-sizing: border-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add exercise</a>
+
+<p style="margin: 0; font-size: 13px; line-height: 1.4; color: #A3ACB9">Tap an exercise to set its sets, rep range and rest time. Suggested weights come from your history on each run.</p>
+
+</div>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; padding: 12px 16px 34px; background: #0B0D10; border-top: 1px solid #232831">
+<button style="width: 100%; height: 44px; background: none; border: none; color: #F2545B; font-size: 17px; font-weight: 600; font-family: inherit">Delete routine</button>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const base = [
+{ id: 'bp', name: 'Bench press', meta: '4 × 8–10 · rest 2:00', min: 14 },
+{ id: 'idp', name: 'Incline dumbbell press', meta: '3 × 10–12 · rest 1:30', min: 10 },
+{ id: 'ohp', name: 'Overhead press', meta: '3 × 8–10 · rest 1:30', min: 10 },
+{ id: 'tp', name: 'Triceps pushdown', meta: '3 × 12–15 · rest 1:00', min: 8 },
+{ id: 'lr', name: 'Lateral raise', meta: '3 × 12–15 · rest 1:00', min: 8 }
+];
+const order = (this.state && this.state.order) || base.map((b) => b.id);
+const byId = Object.fromEntries(base.map((b) => [b.id, b]));
+const move = (i, d) => { const o = order.slice(); const j = i + d; if (j < 0 || j >= o.length) return; [o[i], o[j]] = [o[j], o[i]]; this.setState({ order: o }); };
+const items = order.map((id, i) => ({
+...byId[id], n: i + 1,
+isFirst: i === 0, isLast: i === order.length - 1,
+upColor: i === 0 ? '#3A414D' : '#A3ACB9',
+downColor: i === order.length - 1 ? '#3A414D' : '#A3ACB9',
+up: () => move(i, -1), down: () => move(i, 1),
+remove: () => this.setState({ order: order.filter((x) => x !== id) })
+}));
+const mins = items.reduce((s, e) => s + e.min, 0);
+return { items, count: items.length + (items.length === 1 ? ' exercise' : ' exercises'), mins };
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add exercise</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<div aria-hidden="true" style="box-sizing: border-box; padding: 56px 16px 0; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; height: 44px"><span style="font-size: 17px; font-weight: 600; margin: 0 auto">Push day</span></div>
+<div style="height: 120px; border-radius: 16px; background: #14171C; border: 1px solid #262B33"></div>
+</div>
+<div style="position: absolute; inset: 0; background: rgba(0,0,0,0.6)"></div>
+
+<section aria-label="Add exercise" style="position: absolute; left: 0; right: 0; bottom: 0; top: 64px; box-sizing: border-box; padding: 8px 16px 0; background: #14171C; border-top: 1px solid #262B33; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; gap: 12px">
+
+<div aria-hidden="true" style="align-self: center; width: 36px; height: 5px; border-radius: 3px; background: #3A414D"></div>
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<a href="Active.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 17px; text-decoration: none">Cancel</a>
+<h1 style="margin: 0; font-size: 17px; font-weight: 600">Add exercise</h1>
+<a href="CustomExercise.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 17px; text-decoration: none">New</a>
+</div>
+
+<div style="display: flex; align-items: center; gap: 8px; height: 44px; box-sizing: border-box; padding: 0 12px; border-radius: 12px; background: #1B1F26; color: #A3ACB9">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14ZM20 20l-4-4"></path></svg>
+<input type="search" placeholder="Search 240 exercises" aria-label="Search exercises" style="flex: 1; min-width: 0; height: 40px; border: none; background: transparent; color: #F4F6F8; font-size: 17px; font-family: inherit; outline: none">
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 6px; color: #7FA6FF"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg><h2 style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase">Suggested next</h2></div>
+<sc-for list="{{suggested}}" as="e" hint-placeholder-count="2">
+<button role="checkbox" aria-checked="{{e.checked}}" onClick="{{e.toggle}}" style="display: flex; align-items: center; gap: 12px; min-height: 64px; box-sizing: border-box; padding: 10px 12px; border-radius: 12px; background: {{e.bg}}; border: {{e.border}}; color: #F4F6F8; font-family: inherit; text-align: left; cursor: pointer">
+<div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0"><span style="font-size: 17px; font-weight: 600">{{e.name}}</span><span style="font-size: 13px; color: #A3ACB9">{{e.meta}}</span></div>
+<span style="width: 24px; height: 24px; border-radius: 12px; box-sizing: border-box; background: {{e.boxBg}}; border: {{e.boxBorder}}; display: flex; align-items: center; justify-content: center; flex: none"><sc-if value="{{e.on}}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if></span>
+</button>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h2 style="margin: 0 0 4px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #A3ACB9">Chest and shoulders</h2>
+<sc-for list="{{others}}" as="e" hint-placeholder-count="4">
+<button role="checkbox" aria-checked="{{e.checked}}" onClick="{{e.toggle}}" style="display: flex; align-items: center; gap: 12px; min-height: 56px; box-sizing: border-box; padding: 6px 12px; border-radius: 12px; background: {{e.bg}}; border: {{e.border}}; color: #F4F6F8; font-family: inherit; text-align: left; cursor: pointer">
+<div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0"><span style="font-size: 17px; font-weight: 500">{{e.name}}</span><span style="font-size: 13px; color: #A3ACB9">{{e.meta}}</span></div>
+<span style="width: 24px; height: 24px; border-radius: 12px; box-sizing: border-box; background: {{e.boxBg}}; border: {{e.boxBorder}}; display: flex; align-items: center; justify-content: center; flex: none"><sc-if value="{{e.on}}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if></span>
+</button>
+</sc-for>
+</div>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; padding: 12px 16px 34px; background: #14171C; border-top: 1px solid #262B33">
+<a href="Active.dc.html" aria-disabled="{{none}}" style="height: 52px; border-radius: 14px; background: {{ctaBg}}; color: {{ctaColor}}; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">{{cta}}</a>
+</div>
+
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const sel = (this.state && this.state.sel) || { ohp: true };
+const mk = (e) => {
+const on = !!sel[e.id];
+return { ...e, on, checked: on ? 'true' : 'false',
+bg: on ? 'rgba(43,100,240,0.12)' : 'transparent',
+border: on ? '1px solid #7FA6FF' : '1px solid transparent',
+boxBg: on ? '#2B64F0' : 'transparent', boxBorder: on ? 'none' : '1.5px solid #5A6472',
+toggle: () => this.setState({ sel: { ...sel, [e.id]: !on } }) };
+};
+const suggested = [
+{ id: 'ohp', name: 'Overhead press', meta: 'Shoulders are under target this week' },
+{ id: 'tp', name: 'Triceps pushdown', meta: 'Usually follows your pressing' }
+].map(mk);
+const others = [
+{ id: 'cc', name: 'Cable crossover', meta: 'Chest · Cable' },
+{ id: 'dbf', name: 'Dumbbell fly', meta: 'Chest · Dumbbell' },
+{ id: 'lr', name: 'Lateral raise', meta: 'Shoulders · Dumbbell' },
+{ id: 'ap', name: 'Arnold press', meta: 'Shoulders · Dumbbell' }
+].map(mk);
+const n = Object.values(sel).filter(Boolean).length;
+return {
+suggested, others,
+none: n === 0 ? 'true' : 'false',
+cta: n === 0 ? 'Select exercises' : (n === 1 ? 'Add 1 exercise' : 'Add ' + n + ' exercises'),
+ctaBg: n === 0 ? '#1B1F26' : '#2B64F0', ctaColor: n === 0 ? '#8B94A3' : '#FFFFFF'
+};
+}
+}
+</script>
+</body>
+</html>

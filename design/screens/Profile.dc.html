@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Profile and settings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<div style="box-sizing: border-box; padding: 56px 16px 0; display: flex; flex-direction: column; gap: 14px">
+
+<h1 style="margin: 0; font-size: 34px; font-weight: 700; letter-spacing: -0.5px">Profile</h1>
+
+<sc-for list="{{sections}}" as="sec" hint-placeholder-count="4">
+<section aria-label="{{sec.title}}" style="display: flex; flex-direction: column; gap: 6px">
+<h2 style="margin: 0; padding-left: 4px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #A3ACB9">{{sec.title}}</h2>
+<div style="display: flex; flex-direction: column; background: #14171C; border: 1px solid #262B33; border-radius: 16px; overflow: hidden">
+<sc-for list="{{sec.rows}}" as="r" hint-placeholder-count="2">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 48px; box-sizing: border-box; padding: 0 14px; border-top: {{r.line}}">
+<span style="width: 30px; height: 30px; border-radius: 8px; background: #1B1F26; color: #7FA6FF; display: flex; align-items: center; justify-content: center; flex: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{r.icon}}"></path></svg></span>
+<span id="{{r.id}}" style="flex: 1; font-size: 17px">{{r.label}}</span>
+<sc-if value="{{r.isToggle}}" hint-placeholder-val="{{ false }}">
+<button role="switch" aria-labelledby="{{r.id}}" aria-checked="{{r.checked}}" onClick="{{r.toggle}}" style="width: 51px; height: 31px; border-radius: 16px; border: none; padding: 2px; background: {{r.switchBg}}; display: flex; justify-content: {{r.switchJustify}}; cursor: pointer; flex: none"><span style="width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF"></span></button>
+</sc-if>
+<sc-if value="{{r.isLink}}" hint-placeholder-val="{{ true }}">
+<span style="display: flex; align-items: center; gap: 6px; font-size: 17px; color: #A3ACB9; font-variant-numeric: tabular-nums">{{r.value}}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-for>
+
+<div style="display: flex; justify-content: space-between">
+<button style="min-height: 44px; padding: 0 4px; background: none; border: none; color: #7FA6FF; font-size: 15px; font-weight: 500; font-family: inherit">Export my data</button>
+<button style="min-height: 44px; padding: 0 4px; background: none; border: none; color: #F2545B; font-size: 15px; font-weight: 600; font-family: inherit">Delete all data</button>
+</div>
+
+</div>
+
+<nav aria-label="Main tabs" style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding: 8px 8px 26px; display: flex; background: #0F1217; border-top: 1px solid #232831">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+<a href="{{t.href}}" style="flex: 1; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{t.color}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.d}}"></path></svg><span>{{t.label}}</span></a>
+</sc-for>
+</nav>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const ACTIVE = 4;
+const tabs = [
+{ label: 'Home', href: 'Home.dc.html', d: 'M3 11.5 12 4l9 7.5M5 10v10h5v-6h4v6h5V10' },
+{ label: 'Workout', href: 'Start.dc.html', d: 'M6.5 6.5v11M3.5 9v6M17.5 6.5v11M20.5 9v6M6.5 12h11' },
+{ label: 'Exercises', href: 'Exercises.dc.html', d: 'M4 6h16M4 12h16M4 18h10' },
+{ label: 'Progress', href: 'Progress.dc.html', d: 'M4 19V9M10 19V5M16 19v-8M3 21h18' },
+{ label: 'Profile', href: 'Profile.dc.html', d: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c0-4 3.6-6 8-6s8 2 8 6' }
+].map((t, i) => ({ ...t, color: i === ACTIVE ? '#7FA6FF' : '#8B94A3' }));
+const on = (this.state && this.state.on) || { alerts: true, voice: true, ai: true };
+const I = {
+goal: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-4a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0-4a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z',
+gear: 'M6.5 6.5v11M3.5 9v6M17.5 6.5v11M20.5 9v6M6.5 12h11',
+units: 'M4 7h16M7 7v10M17 7v10M4 17h16',
+timer: 'M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM12 9v4l2.5 2.5M9 2h6',
+bell: 'M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15L6 16ZM10 21h4',
+mic: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3ZM5 11a7 7 0 0 0 14 0M12 18v3',
+spark: 'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z',
+heart: 'M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z',
+watch: 'M8 7V3h8v4M8 17v4h8v-4M7 7h10a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z'
+};
+const link = (id, label, value, icon) => ({ id, label, value, icon, isLink: true, isToggle: false });
+const tog = (id, label, icon) => {
+const v = !!on[id];
+return { id, label, icon, isLink: false, isToggle: true, checked: v ? 'true' : 'false', switchBg: v ? '#34D399' : '#3A414D', switchJustify: v ? 'flex-end' : 'flex-start', toggle: () => this.setState({ on: { ...on, [id]: !v } }) };
+};
+const raw = [
+{ title: 'Training', rows: [link('goal', 'Goal and schedule', 'Strength · 4/wk', I.goal), link('gear', 'Equipment', '6 items', I.gear), link('units', 'Units', 'kg', I.units)] },
+{ title: 'Rest timer', rows: [link('rest', 'Default rest', '1:30', I.timer), tog('alerts', 'Alert when rest ends', I.bell)] },
+{ title: 'Voice and suggestions', rows: [tog('voice', 'Voice set logging', I.mic), tog('ai', 'AI plan suggestions', I.spark)] },
+{ title: 'Apple', rows: [link('health', 'Apple Health', 'On', I.heart), link('watch', 'Apple Watch', 'Connected', I.watch)] }
+];
+const sections = raw.map((s) => ({ ...s, rows: s.rows.map((r, i) => ({ ...r, id: 'row-' + r.id, line: i === 0 ? 'none' : '1px solid #262B33' })) }));
+return { tabs, sections };
+}
+}
+</script>
+</body>
+</html>

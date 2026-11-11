@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home · first run</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<div style="box-sizing: border-box; padding: 56px 16px 0; display: flex; flex-direction: column; gap: 14px">
+
+<header style="display: flex; align-items: center; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 13px; color: #A3ACB9">Wednesday, 11 November</span>
+<h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.4px">Welcome</h1>
+</div>
+<a href="Profile.dc.html" aria-label="Profile and settings" style="width: 44px; height: 44px; box-sizing: border-box; border-radius: 22px; background: #14171C; border: 1px solid #262B33; color: #F4F6F8; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c0-4 3.6-6 8-6s8 2 8 6"></path></svg></a>
+</header>
+
+<section aria-label="Your first workout" style="background: #14171C; border: 1px solid #262B33; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="align-self: flex-start; height: 28px; padding: 0 12px 0 8px; border-radius: 999px; background: rgba(43,100,240,0.18); color: #7FA6FF; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg>Starter plan</span>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<h2 style="margin: 0; font-size: 22px; font-weight: 700">Full body A</h2>
+<span style="font-size: 15px; color: #A3ACB9">5 exercises · about 45 min</span>
+</div>
+<p style="margin: 0; font-size: 13px; line-height: 1.4; color: #A3ACB9">Built from your goal, 4 days a week and gym equipment. Pick weights that leave 2 reps in reserve; suggestions get personal after a few sessions.</p>
+<div style="display: flex; gap: 8px; margin-top: 2px">
+<a href="Active.dc.html" style="flex: 1; height: 48px; border-radius: 14px; background: #2B64F0; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Start workout</a>
+<a href="RoutineEditor.dc.html" style="width: 104px; height: 48px; border-radius: 14px; background: #1B1F26; border: 1px solid #262B33; color: #F4F6F8; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none; box-sizing: border-box">Edit plan</a>
+</div>
+</section>
+
+<div style="display: flex; gap: 10px">
+<div style="flex: 1; min-width: 0; box-sizing: border-box; background: #14171C; border: 1px solid #262B33; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; color: #A3ACB9">Fatigue</span>
+<span style="font-size: 17px; font-weight: 700">Not enough data</span>
+<span style="font-size: 12px; line-height: 1.35; color: #A3ACB9">Log 3 workouts to see your score</span>
+<div role="progressbar" aria-label="0 of 3 workouts logged" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0" style="display: flex; gap: 4px; margin-top: 2px">
+<div style="flex: 1; height: 4px; border-radius: 2px; background: #262B33"></div>
+<div style="flex: 1; height: 4px; border-radius: 2px; background: #262B33"></div>
+<div style="flex: 1; height: 4px; border-radius: 2px; background: #262B33"></div>
+</div>
+</div>
+<div style="flex: 1; min-width: 0; box-sizing: border-box; background: #14171C; border: 1px solid #262B33; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; justify-content: space-between"><span style="font-size: 13px; color: #A3ACB9">This week</span><span style="font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums">0 of 4</span></div>
+<div role="img" aria-label="No workouts yet this week. Today is Wednesday." style="display: flex; justify-content: space-between">
+<sc-for list="{{week}}" as="d" hint-placeholder-count="7">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px"><div style="width: 16px; height: 16px; border-radius: 8px; box-sizing: border-box; border: {{d.border}}"></div><span style="font-size: 12px; color: #A3ACB9">{{d.label}}</span></div>
+</sc-for>
+</div>
+</div>
+</div>
+
+<section aria-label="Recent workouts" style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 17px; font-weight: 600">Recent</h2>
+<div style="box-sizing: border-box; padding: 24px 20px; border: 1px dashed #3A414D; border-radius: 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+<div style="width: 48px; height: 48px; border-radius: 12px; background: #14171C; color: #7FA6FF; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 6.5v11M3.5 9v6M17.5 6.5v11M20.5 9v6M6.5 12h11"></path></svg></div>
+<span style="font-size: 17px; font-weight: 600">No workouts yet</span>
+<span style="font-size: 13px; line-height: 1.4; color: #A3ACB9">Finished workouts show here with time and total volume. Progress charts fill in after your first week.</span>
+<a href="Start.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 15px; font-weight: 600; text-decoration: none">Browse routines</a>
+</div>
+</section>
+
+</div>
+
+<nav aria-label="Main tabs" style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding: 8px 8px 26px; display: flex; background: #0F1217; border-top: 1px solid #232831">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+<a href="{{t.href}}" style="flex: 1; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{t.color}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.d}}"></path></svg><span>{{t.label}}</span></a>
+</sc-for>
+</nav>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const ACTIVE = 0;
+const tabs = [
+{ label: 'Home', href: 'Home.dc.html', d: 'M3 11.5 12 4l9 7.5M5 10v10h5v-6h4v6h5V10' },
+{ label: 'Workout', href: 'Start.dc.html', d: 'M6.5 6.5v11M3.5 9v6M17.5 6.5v11M20.5 9v6M6.5 12h11' },
+{ label: 'Exercises', href: 'Exercises.dc.html', d: 'M4 6h16M4 12h16M4 18h10' },
+{ label: 'Progress', href: 'Progress.dc.html', d: 'M4 19V9M10 19V5M16 19v-8M3 21h18' },
+{ label: 'Profile', href: 'Profile.dc.html', d: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c0-4 3.6-6 8-6s8 2 8 6' }
+].map((t, i) => ({ ...t, color: i === ACTIVE ? '#7FA6FF' : '#8B94A3' }));
+const week = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((label, i) => ({ label, border: i === 2 ? '2px solid #7FA6FF' : '1.5px solid #3A414D' }));
+return { tabs, week };
+}
+}
+</script>
+</body>
+</html>

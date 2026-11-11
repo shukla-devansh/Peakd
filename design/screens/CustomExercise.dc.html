@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Custom exercise</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<div style="box-sizing: border-box; padding: 56px 16px 0; display: flex; flex-direction: column; gap: 18px">
+
+<header style="display: flex; align-items: center; justify-content: space-between; height: 44px">
+<a href="Exercises.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 17px; text-decoration: none">Cancel</a>
+<h1 style="margin: 0; font-size: 17px; font-weight: 600">New exercise</h1>
+<a href="Exercises.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 17px; font-weight: 600; text-decoration: none">Save</a>
+</header>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="ex-name" style="font-size: 13px; color: #A3ACB9">Name</label>
+<input id="ex-name" value="Landmine press" aria-describedby="ex-name-help" style="height: 48px; box-sizing: border-box; padding: 0 14px; border-radius: 12px; background: #1B1F26; border: 1px solid #262B33; color: #F4F6F8; font-size: 17px; font-family: inherit">
+<span id="ex-name-help" style="font-size: 12px; color: #A3ACB9">Voice logging will recognise this name too.</span>
+</div>
+
+<fieldset style="margin: 0; padding: 0; border: none">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 13px; color: #A3ACB9">Main muscle group</legend>
+<div role="radiogroup" aria-label="Main muscle group" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{muscles}}" as="m" hint-placeholder-count="7">
+<button role="radio" aria-checked="{{m.checked}}" onClick="{{m.pick}}" style="height: 36px; padding: 0 16px; border-radius: 999px; background: {{m.bg}}; border: {{m.border}}; color: {{m.color}}; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer">{{m.label}}</button>
+</sc-for>
+</div>
+</fieldset>
+
+<fieldset style="margin: 0; padding: 0; border: none">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 13px; color: #A3ACB9">How you track it</legend>
+<div role="radiogroup" aria-label="Tracking type" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: #14171C; border: 1px solid #262B33">
+<sc-for list="{{types}}" as="t" hint-placeholder-count="3">
+<button role="radio" aria-checked="{{t.checked}}" onClick="{{t.pick}}" style="height: 40px; border-radius: 9px; border: none; background: {{t.bg}}; color: {{t.color}}; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer">{{t.label}}</button>
+</sc-for>
+</div>
+</fieldset>
+
+<div style="display: flex; flex-direction: column; background: #14171C; border: 1px solid #262B33; border-radius: 16px">
+<button style="display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 14px; background: none; border: none; border-bottom: 1px solid #262B33; color: #F4F6F8; font-family: inherit; text-align: left">
+<span style="font-size: 17px">Equipment</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 17px; color: #A3ACB9">Barbell<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span>
+</button>
+<button style="display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 14px; background: none; border: none; border-bottom: 1px solid #262B33; color: #F4F6F8; font-family: inherit; text-align: left">
+<span style="font-size: 17px">Also works</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 17px; color: #A3ACB9">Chest, triceps<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span>
+</button>
+<button style="display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 14px; background: none; border: none; color: #F4F6F8; font-family: inherit; text-align: left">
+<span style="font-size: 17px">Default rest</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 17px; color: #A3ACB9; font-variant-numeric: tabular-nums">1:30<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span>
+</button>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="ex-notes" style="font-size: 13px; color: #A3ACB9">Notes (optional)</label>
+<textarea id="ex-notes" rows="3" placeholder="Setup cues, grip, seat height" style="box-sizing: border-box; padding: 12px 14px; border-radius: 12px; background: #1B1F26; border: 1px solid #262B33; color: #F4F6F8; font-size: 17px; font-family: inherit; resize: none"></textarea>
+</div>
+
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const st = this.state || {};
+const m = st.m || 'Shoulders';
+const t = st.t || 'Weight × reps';
+const muscles = ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core', 'Full body'].map((label) => {
+const on = label === m;
+return { label, checked: on ? 'true' : 'false', bg: on ? '#2B64F0' : '#14171C', border: on ? '1px solid #2B64F0' : '1px solid #262B33', color: on ? '#FFFFFF' : '#A3ACB9', pick: () => this.setState({ m: label }) };
+});
+const types = ['Weight × reps', 'Reps only', 'Time'].map((label) => {
+const on = label === t;
+return { label, checked: on ? 'true' : 'false', bg: on ? '#2B64F0' : 'transparent', color: on ? '#FFFFFF' : '#A3ACB9', pick: () => this.setState({ t: label }) };
+});
+return { muscles, types };
+}
+}
+</script>
+</body>
+</html>

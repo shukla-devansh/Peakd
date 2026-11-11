@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Exercise detail</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<div style="box-sizing: border-box; padding: 52px 16px 0; display: flex; flex-direction: column; gap: 12px">
+
+<header style="display: flex; flex-direction: column; gap: 0">
+<a href="Exercises.dc.html" aria-label="Back to exercises" style="width: 44px; height: 44px; margin-left: -12px; display: flex; align-items: center; justify-content: center; color: #F4F6F8"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.4px">Bench press</h1>
+<span style="font-size: 15px; color: #A3ACB9">Chest · Barbell</span>
+</header>
+
+<section aria-label="Records" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{records}}" as="r" hint-placeholder-count="3">
+<div style="box-sizing: border-box; min-height: 76px; background: #14171C; border: 1px solid #262B33; border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 12px; color: #A3ACB9">{{r.label}}</span>
+<span style="font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums">{{r.value}} <span style="font-size: 12px; font-weight: 500; color: #A3ACB9">{{r.unit}}</span></span>
+<span style="font-size: 12px; color: #FFC857; font-weight: 600">{{r.sub}}</span>
+</div>
+</sc-for>
+</section>
+
+<section aria-label="Top set weight" style="background: #14171C; border: 1px solid #262B33; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; align-items: baseline; justify-content: space-between"><h2 style="margin: 0; font-size: 17px; font-weight: 600">Top set weight</h2><span style="font-size: 12px; color: #A3ACB9">kg</span></div>
+<svg role="img" aria-label="Top set weight rose from 35 kilograms on October 21 to 45 kilograms on November 11" width="100%" viewBox="0 0 330 128" style="display: block">
+<g font-family="Inter, sans-serif" font-size="10" fill="#A3ACB9">
+<line x1="30" y1="100" x2="326" y2="100" stroke="#262B33"></line><line x1="30" y1="60" x2="326" y2="60" stroke="#262B33"></line><line x1="30" y1="20" x2="326" y2="20" stroke="#262B33"></line>
+<text x="0" y="103">30</text><text x="0" y="63">40</text><text x="0" y="23">50</text>
+<text x="60" y="118" text-anchor="middle">Oct 21</text><text x="140" y="118" text-anchor="middle">Oct 28</text><text x="220" y="118" text-anchor="middle">Nov 2</text><text x="296" y="118" text-anchor="middle">Nov 11</text>
+</g>
+<polygon points="60,80 140,70 220,60 300,40 300,100 60,100" fill="#7FA6FF" fill-opacity="0.16"></polygon>
+<polyline points="60,80 140,70 220,60 300,40" fill="none" stroke="#7FA6FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+<g fill="#7FA6FF"><circle cx="60" cy="80" r="3.5"></circle><circle cx="140" cy="70" r="3.5"></circle><circle cx="220" cy="60" r="3.5"></circle><circle cx="300" cy="40" r="4.5"></circle></g>
+<g font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#F4F6F8" text-anchor="middle"><text x="60" y="72">35</text><text x="140" y="62">37.5</text><text x="220" y="52">40</text><text x="300" y="32">45</text></g>
+</svg>
+</section>
+
+<section aria-label="Next time" style="background: rgba(43,100,240,0.12); border: 1px solid rgba(127,166,255,0.35); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; align-items: center; gap: 6px; color: #7FA6FF"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"></path></svg><h2 style="margin: 0; font-size: 15px; font-weight: 600">Next time: 45 kg × 8–10</h2></div>
+<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #D5DAE2">You reached 8 reps at 45 kg. Stay at this weight until you hit 10 reps on every set, then add 2.5 kg.</p>
+</section>
+
+<section aria-label="History" style="display: flex; flex-direction: column; gap: 6px">
+<h2 style="margin: 4px 0 0; font-size: 13px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: #A3ACB9">History</h2>
+<sc-for list="{{history}}" as="h" hint-placeholder-count="2">
+<div style="display: flex; align-items: center; justify-content: space-between; min-height: 56px; box-sizing: border-box; padding: 8px 14px; background: #14171C; border: 1px solid #262B33; border-radius: 12px">
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 600">{{h.date}}</span><span style="font-size: 13px; color: #A3ACB9; font-variant-numeric: tabular-nums">{{h.sets}}</span></div>
+<span style="font-size: 13px; color: #A3ACB9; font-variant-numeric: tabular-nums">{{h.volume}}</span>
+</div>
+</sc-for>
+</section>
+
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const records = [
+{ label: 'Heaviest', value: '45', unit: 'kg', sub: 'Record' },
+{ label: 'Best set', value: '45 × 8', unit: '', sub: 'Record' },
+{ label: 'Est. 1RM', value: '57.0', unit: 'kg', sub: 'Record' }
+];
+const history = [
+{ date: 'Wednesday, 11 Nov', sets: '42.5 × 10, 42.5 × 10, 45 × 8', volume: '1,210 kg' },
+{ date: 'Monday, 2 Nov', sets: '40 × 10, 40 × 10, 40 × 10, 40 × 9', volume: '1,560 kg' }
+];
+return { records, history };
+}
+}
+</script>
+
+
+</body></html>

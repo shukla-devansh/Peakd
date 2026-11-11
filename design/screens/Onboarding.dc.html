@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Onboarding · goals</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<div style="box-sizing: border-box; padding: 56px 16px 0; display: flex; flex-direction: column; gap: 20px">
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div role="progressbar" aria-label="Setup progress, step 1 of 3" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" style="display: flex; gap: 6px">
+<div style="flex: 1; height: 4px; border-radius: 2px; background: #7FA6FF"></div>
+<div style="flex: 1; height: 4px; border-radius: 2px; background: #262B33"></div>
+<div style="flex: 1; height: 4px; border-radius: 2px; background: #262B33"></div>
+</div>
+<span style="font-size: 13px; color: #A3ACB9">Step 1 of 3</span>
+<h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.4px">What are you training for?</h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.4; color: #A3ACB9">Your plan suggestions start from this. You can change it any time in Profile.</p>
+</div>
+
+<fieldset style="margin: 0; padding: 0; border: none; display: flex; flex-direction: column; gap: 8px">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #A3ACB9">Main goal</legend>
+<sc-for list="{{goals}}" as="g" hint-placeholder-count="4">
+<button role="radio" aria-checked="{{g.checked}}" onClick="{{g.pick}}" style="display: flex; align-items: center; gap: 12px; min-height: 60px; box-sizing: border-box; padding: 10px 14px; border-radius: 14px; background: {{g.bg}}; border: {{g.border}}; color: #F4F6F8; font-family: inherit; text-align: left; cursor: pointer">
+<span style="display: flex; flex-direction: column; gap: 2px; flex: 1"><span style="font-size: 17px; font-weight: 600">{{g.label}}</span><span style="font-size: 13px; color: #A3ACB9">{{g.sub}}</span></span>
+<span style="width: 24px; height: 24px; border-radius: 12px; box-sizing: border-box; border: {{g.ring}}; display: flex; align-items: center; justify-content: center; flex: none"><span style="width: 10px; height: 10px; border-radius: 5px; background: {{g.dot}}"></span></span>
+</button>
+</sc-for>
+</fieldset>
+
+<fieldset style="margin: 0; padding: 0; border: none; display: flex; flex-direction: column; gap: 8px">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #A3ACB9">Experience</legend>
+<div role="radiogroup" aria-label="Experience" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; border-radius: 12px; background: #14171C; border: 1px solid #262B33">
+<sc-for list="{{levels}}" as="l" hint-placeholder-count="3">
+<button role="radio" aria-checked="{{l.checked}}" onClick="{{l.pick}}" style="height: 40px; border-radius: 9px; border: none; background: {{l.bg}}; color: {{l.color}}; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer">{{l.label}}</button>
+</sc-for>
+</div>
+</fieldset>
+
+<fieldset style="margin: 0; padding: 0; border: none; display: flex; flex-direction: column; gap: 8px">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #A3ACB9">Days per week</legend>
+<div role="radiogroup" aria-label="Training days per week" style="display: flex; gap: 8px">
+<sc-for list="{{days}}" as="d" hint-placeholder-count="5">
+<button role="radio" aria-checked="{{d.checked}}" onClick="{{d.pick}}" style="flex: 1; height: 48px; border-radius: 12px; background: {{d.bg}}; border: {{d.border}}; color: {{d.color}}; font-size: 17px; font-weight: 600; font-family: inherit; font-variant-numeric: tabular-nums; cursor: pointer">{{d.label}}</button>
+</sc-for>
+</div>
+</fieldset>
+
+</div>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; padding: 12px 16px 34px; display: flex; flex-direction: column; gap: 4px; background: #0B0D10">
+<a href="Equipment.dc.html" style="height: 52px; border-radius: 14px; background: #2B64F0; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Continue</a>
+<a href="HomeEmpty.dc.html" style="height: 44px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 500; text-decoration: none">Skip setup</a>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const goal = (this.state && this.state.goal) || 'strength';
+const level = (this.state && this.state.level) || 'Intermediate';
+const day = (this.state && this.state.day) || 4;
+const goals = [
+{ id: 'strength', label: 'Get stronger', sub: 'Heavier weights, lower reps' },
+{ id: 'muscle', label: 'Build muscle', sub: 'Moderate weights, 8–12 reps' },
+{ id: 'fitness', label: 'General fitness', sub: 'Balanced full-body training' },
+{ id: 'lean', label: 'Get leaner', sub: 'Keep strength while you cut' }
+].map((g) => {
+const on = g.id === goal;
+return { ...g, checked: on ? 'true' : 'false', bg: on ? 'rgba(43,100,240,0.12)' : '#14171C', border: on ? '1px solid #7FA6FF' : '1px solid #262B33', ring: on ? '2px solid #7FA6FF' : '1.5px solid #5A6472', dot: on ? '#7FA6FF' : 'transparent', pick: () => this.setState({ goal: g.id }) };
+});
+const levels = ['Beginner', 'Intermediate', 'Advanced'].map((label) => {
+const on = label === level;
+return { label, checked: on ? 'true' : 'false', bg: on ? '#2B64F0' : 'transparent', color: on ? '#FFFFFF' : '#A3ACB9', pick: () => this.setState({ level: label }) };
+});
+const days = [2, 3, 4, 5, 6].map((n) => {
+const on = n === day;
+return { label: String(n), checked: on ? 'true' : 'false', bg: on ? '#2B64F0' : '#14171C', border: on ? '1px solid #2B64F0' : '1px solid #262B33', color: on ? '#FFFFFF' : '#A3ACB9', pick: () => this.setState({ day: n }) };
+});
+return { goals, levels, days };
+}
+}
+</script>
+</body>
+</html>

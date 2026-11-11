@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Workout history</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<div style="box-sizing: border-box; padding: 56px 16px 0; display: flex; flex-direction: column; gap: 14px">
+
+<header style="display: flex; flex-direction: column">
+<a href="Home.dc.html" aria-label="Back to home" style="width: 44px; height: 44px; margin-left: -12px; display: flex; align-items: center; justify-content: center; color: #F4F6F8"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.4px">History</h1>
+</header>
+
+<div role="group" aria-label="Filter by routine" style="display: flex; gap: 8px">
+<sc-for list="{{chips}}" as="c" hint-placeholder-count="5">
+<button aria-pressed="{{c.pressed}}" onClick="{{c.pick}}" style="height: 36px; padding: 0 16px; border-radius: 999px; background: {{c.bg}}; border: {{c.border}}; color: {{c.color}}; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer">{{c.label}}</button>
+</sc-for>
+</div>
+
+<section aria-label="November" style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 17px; font-weight: 600">November</h2>
+<span style="font-size: 13px; color: #A3ACB9; font-variant-numeric: tabular-nums">{{novMeta}}</span>
+</div>
+<sc-for list="{{nov}}" as="w" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 4px; min-height: 72px; box-sizing: border-box; padding: 10px 4px 10px 14px; background: #14171C; border: 1px solid #262B33; border-radius: 12px">
+<a href="Summary.dc.html" style="display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; min-height: 52px; text-decoration: none; color: #F4F6F8">
+<div style="width: 44px; display: flex; flex-direction: column; align-items: center; flex: none"><span style="font-size: 12px; font-weight: 600; color: #A3ACB9; text-transform: uppercase">{{w.dow}}</span><span style="font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums">{{w.day}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 17px; font-weight: 600">{{w.name}}</span><span style="font-size: 13px; color: #A3ACB9; font-variant-numeric: tabular-nums">{{w.meta}}</span>
+<sc-if value="{{w.hasPr}}" hint-placeholder-val="{{ false }}"><span style="align-self: flex-start; margin-top: 2px; height: 22px; padding: 0 8px 0 6px; border-radius: 999px; background: rgba(255,200,87,0.16); color: #FFC857; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4ZM8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 13v4M8 20h8"></path></svg>{{w.pr}}</span></sc-if>
+</div>
+</a>
+<button aria-label="More options for {{w.name}}, {{w.dow}} {{w.day}}" style="width: 44px; height: 44px; background: none; border: none; color: #A3ACB9; display: flex; align-items: center; justify-content: center; padding: 0; flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg></button>
+</div>
+</sc-for>
+</section>
+
+<section aria-label="October" style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<h2 style="margin: 0; font-size: 17px; font-weight: 600">October</h2>
+<span style="font-size: 13px; color: #A3ACB9">16 workouts · 178.4k kg</span>
+</div>
+<sc-for list="{{oct}}" as="w" hint-placeholder-count="1">
+<a href="Summary.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 64px; box-sizing: border-box; padding: 10px 14px; background: #14171C; border: 1px solid #262B33; border-radius: 12px; text-decoration: none; color: #F4F6F8">
+<div style="width: 44px; display: flex; flex-direction: column; align-items: center; flex: none"><span style="font-size: 12px; font-weight: 600; color: #A3ACB9; text-transform: uppercase">{{w.dow}}</span><span style="font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums">{{w.day}}</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 600">{{w.name}}</span><span style="font-size: 13px; color: #A3ACB9">{{w.meta}}</span></div>
+</a>
+</sc-for>
+</section>
+
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const f = (this.state && this.state.f) || 'All';
+const chips = ['All', 'Push', 'Pull', 'Legs', 'Upper'].map((label) => {
+const on = label === f;
+return { label, pressed: on ? 'true' : 'false', bg: on ? '#2B64F0' : '#14171C', border: on ? '1px solid #2B64F0' : '1px solid #262B33', color: on ? '#FFFFFF' : '#A3ACB9', pick: () => this.setState({ f: label }) };
+});
+const novAll = [
+{ dow: 'Wed', day: '11', name: 'Push day', tag: 'Push', meta: '58 min · 12,480 kg · 18 sets', hasPr: true, pr: '2 records' },
+{ dow: 'Tue', day: '10', name: 'Legs', tag: 'Legs', meta: '64 min · 18,920 kg · 20 sets', hasPr: false, pr: '' },
+{ dow: 'Mon', day: '9', name: 'Upper body', tag: 'Upper', meta: '52 min · 11,640 kg · 17 sets', hasPr: true, pr: '1 record' },
+{ dow: 'Fri', day: '6', name: 'Pull day', tag: 'Pull', meta: '55 min · 10,980 kg · 17 sets', hasPr: false, pr: '' }
+];
+const nov = novAll.filter((w) => f === 'All' || w.tag === f);
+const oct = [{ dow: 'Fri', day: '30', name: 'Push day', tag: 'Push', meta: '56 min · 11,770 kg · 18 sets' }].filter((w) => f === 'All' || w.tag === f);
+return { chips, nov, oct, novMeta: nov.length + (nov.length === 1 ? ' workout' : ' workouts') + ' so far' };
+}
+}
+</script>
+</body>
+</html>

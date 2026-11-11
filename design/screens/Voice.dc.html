@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Voice logging</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<!-- Dimmed workout behind the sheet -->
+<div aria-hidden="true" style="box-sizing: border-box; padding: 56px 16px 0; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; justify-content: space-between; height: 44px"><span style="font-size: 17px; font-weight: 600; margin: 0 auto">Push day</span></div>
+<div style="background: #14171C; border: 1px solid #262B33; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 17px; font-weight: 600; color: #7FA6FF">Bench press</span>
+<div style="height: 48px; border-radius: 12px; background: rgba(52,211,153,0.14)"></div>
+<div style="height: 48px; border-radius: 12px; background: rgba(52,211,153,0.14)"></div>
+<div style="height: 48px; border-radius: 12px; background: #1B1F26; border: 1px solid #2B64F0"></div>
+</div>
+</div>
+<div style="position: absolute; inset: 0; background: rgba(0,0,0,0.6)"></div>
+
+<section aria-label="Voice logging" style="position: absolute; left: 0; right: 0; bottom: 0; height: 560px; box-sizing: border-box; padding: 8px 16px 32px; background: #14171C; border-top: 1px solid #262B33; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; gap: 14px">
+
+<div aria-hidden="true" style="align-self: center; width: 36px; height: 5px; border-radius: 3px; background: #3A414D"></div>
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<div style="display: flex; flex-direction: column"><span style="font-size: 22px; font-weight: 700">Listening</span><span style="font-size: 13px; color: #A3ACB9">Bench press · set 3</span></div>
+<a href="Active.dc.html" aria-label="Close voice logging" style="width: 44px; height: 44px; margin-right: -8px; border-radius: 22px; background: #1B1F26; color: #F4F6F8; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+</div>
+
+<div role="img" aria-label="Live sound level" style="height: 64px; display: flex; align-items: center; justify-content: center; gap: 4px">
+<sc-for list="{{bars}}" as="b" hint-placeholder-count="25">
+<div style="width: 4px; height: {{b.h}}px; border-radius: 2px; background: #7FA6FF"></div>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 4px; align-items: center; text-align: center">
+<span style="font-size: 13px; color: #A3ACB9">What I heard</span>
+<span style="font-size: 22px; font-weight: 700">“45 kilos for 8 reps”</span>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<button aria-label="Edit weight, 45 kilograms" style="min-height: 76px; box-sizing: border-box; padding: 10px 12px; border-radius: 14px; background: #1B1F26; border: 1px solid #262B33; color: #F4F6F8; font-family: inherit; text-align: left; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #A3ACB9">Weight</span><span style="font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums">45 <span style="font-size: 13px; font-weight: 500; color: #A3ACB9">kg</span></span><span style="font-size: 12px; color: #34D399; font-weight: 600">+5 kg vs last time</span></button>
+<button aria-label="Edit repetitions, 8" style="min-height: 76px; box-sizing: border-box; padding: 10px 12px; border-radius: 14px; background: #1B1F26; border: 1px solid #262B33; color: #F4F6F8; font-family: inherit; text-align: left; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #A3ACB9">Reps</span><span style="font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums">8</span></button>
+<button aria-label="Edit set number, 3" style="min-height: 76px; box-sizing: border-box; padding: 10px 12px; border-radius: 14px; background: #1B1F26; border: 1px solid #262B33; color: #F4F6F8; font-family: inherit; text-align: left; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 12px; color: #A3ACB9">Set</span><span style="font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums">3</span></button>
+</div>
+
+<p style="margin: 0; font-size: 13px; line-height: 1.4; color: #A3ACB9">Check the numbers, then save. Try “same weight, 10 reps” or “add 2.5 kilos, 8 reps” too.</p>
+
+<div style="display: flex; gap: 8px; margin-top: auto">
+<button style="width: 120px; height: 52px; border-radius: 14px; background: #1B1F26; border: 1px solid #262B33; color: #F4F6F8; font-size: 17px; font-weight: 600; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3ZM5 11a7 7 0 0 0 14 0M12 18v3"></path></svg>Retry</button>
+<a href="Active.dc.html" style="flex: 1; height: 52px; border-radius: 14px; background: #2B64F0; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Save set</a>
+</div>
+
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const heights = [8, 14, 22, 30, 18, 36, 44, 28, 20, 38, 52, 40, 26, 34, 46, 30, 18, 24, 38, 22, 14, 28, 16, 10, 8];
+const bars = heights.map((h) => ({ h }));
+return { bars };
+}
+}
+</script>
+
+
+</body></html>

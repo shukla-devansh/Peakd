@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Onboarding · equipment</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<div style="box-sizing: border-box; padding: 56px 16px 0; display: flex; flex-direction: column; gap: 20px">
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 8px">
+<a href="Onboarding.dc.html" aria-label="Back to goals" style="width: 44px; height: 44px; margin: -10px 0 -10px -12px; display: flex; align-items: center; justify-content: center; color: #F4F6F8"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<div role="progressbar" aria-label="Setup progress, step 2 of 3" aria-valuemin="1" aria-valuemax="3" aria-valuenow="2" style="flex: 1; display: flex; gap: 6px">
+<div style="flex: 1; height: 4px; border-radius: 2px; background: #7FA6FF"></div>
+<div style="flex: 1; height: 4px; border-radius: 2px; background: #7FA6FF"></div>
+<div style="flex: 1; height: 4px; border-radius: 2px; background: #262B33"></div>
+</div>
+</div>
+<span style="font-size: 13px; color: #A3ACB9">Step 2 of 3</span>
+<h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.4px">What can you use?</h1>
+<p style="margin: 0; font-size: 15px; line-height: 1.4; color: #A3ACB9">We only suggest exercises you have the equipment for.</p>
+</div>
+
+<fieldset style="margin: 0; padding: 0; border: none">
+<legend style="padding: 0; margin-bottom: 8px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #A3ACB9">Equipment</legend>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{gear}}" as="g" hint-placeholder-count="8">
+<button role="checkbox" aria-checked="{{g.checked}}" onClick="{{g.toggle}}" style="display: flex; align-items: center; gap: 10px; min-height: 52px; box-sizing: border-box; padding: 0 12px; border-radius: 12px; background: {{g.bg}}; border: {{g.border}}; color: #F4F6F8; font-size: 15px; font-weight: 600; font-family: inherit; text-align: left; cursor: pointer">
+<span style="width: 22px; height: 22px; border-radius: 6px; box-sizing: border-box; background: {{g.boxBg}}; border: {{g.boxBorder}}; display: flex; align-items: center; justify-content: center; flex: none">
+<sc-if value="{{g.on}}" hint-placeholder-val="{{ true }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+</span>
+{{g.label}}
+</button>
+</sc-for>
+</div>
+</fieldset>
+
+<div style="display: flex; flex-direction: column; background: #14171C; border: 1px solid #262B33; border-radius: 16px">
+<div style="display: flex; align-items: center; justify-content: space-between; min-height: 56px; padding: 0 14px; border-bottom: 1px solid #262B33">
+<span id="units-label" style="font-size: 17px">Weight unit</span>
+<div role="radiogroup" aria-labelledby="units-label" style="display: flex; gap: 2px; padding: 3px; border-radius: 10px; background: #0B0D10">
+<sc-for list="{{units}}" as="u" hint-placeholder-count="2">
+<button role="radio" aria-checked="{{u.checked}}" onClick="{{u.pick}}" style="min-width: 52px; height: 38px; border-radius: 8px; border: none; background: {{u.bg}}; color: {{u.color}}; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer">{{u.label}}</button>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; align-items: center; justify-content: space-between; min-height: 56px; padding: 0 14px">
+<span style="display: flex; flex-direction: column"><span style="font-size: 17px">Default rest</span><span style="font-size: 13px; color: #A3ACB9">Change per exercise later</span></span>
+<div style="display: flex; align-items: center; gap: 4px">
+<button aria-label="Shorter rest" onClick="{{restDown}}" style="width: 44px; height: 44px; border-radius: 10px; background: #1B1F26; border: 1px solid #262B33; color: #F4F6F8; font-size: 20px; font-weight: 600; font-family: inherit; cursor: pointer">−</button>
+<span aria-live="polite" style="min-width: 56px; text-align: center; font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums">{{rest}}</span>
+<button aria-label="Longer rest" onClick="{{restUp}}" style="width: 44px; height: 44px; border-radius: 10px; background: #1B1F26; border: 1px solid #262B33; color: #F4F6F8; font-size: 20px; font-weight: 600; font-family: inherit; cursor: pointer">+</button>
+</div>
+</div>
+</div>
+
+</div>
+
+<div style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; padding: 12px 16px 34px; background: #0B0D10">
+<a href="Permissions.dc.html" style="height: 52px; border-radius: 14px; background: #2B64F0; color: #FFFFFF; font-size: 17px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Continue</a>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const st = this.state || {};
+const picked = st.picked || { Barbell: true, Dumbbells: true, 'Cable machine': true, 'Weight machines': true, Bench: true, 'Pull-up bar': true };
+const unit = st.unit || 'kg';
+const restSec = st.rest || 90;
+const gear = ['Barbell', 'Dumbbells', 'Cable machine', 'Weight machines', 'Bench', 'Pull-up bar', 'Kettlebells', 'Resistance bands'].map((label) => {
+const on = !!picked[label];
+return {
+label, on, checked: on ? 'true' : 'false',
+bg: on ? 'rgba(43,100,240,0.12)' : '#14171C',
+border: on ? '1px solid #7FA6FF' : '1px solid #262B33',
+boxBg: on ? '#2B64F0' : 'transparent',
+boxBorder: on ? 'none' : '1.5px solid #5A6472',
+toggle: () => this.setState({ picked: { ...picked, [label]: !on } })
+};
+});
+const units = ['kg', 'lb'].map((label) => {
+const on = label === unit;
+return { label, checked: on ? 'true' : 'false', bg: on ? '#2B64F0' : 'transparent', color: on ? '#FFFFFF' : '#A3ACB9', pick: () => this.setState({ unit: label }) };
+});
+const fmt = (s) => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+return {
+gear, units, rest: fmt(restSec),
+restDown: () => this.setState({ rest: Math.max(30, restSec - 15) }),
+restUp: () => this.setState({ rest: Math.min(300, restSec + 15) })
+};
+}
+}
+</script>
+</body>
+</html>

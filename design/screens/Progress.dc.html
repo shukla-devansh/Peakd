@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Progress dashboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#7FA6FF}a:hover{color:#A9C2FF}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #0B0D10; color: #F4F6F8; font-family: -apple-system, 'SF Pro Text', Inter, system-ui, sans-serif">
+
+<div style="box-sizing: border-box; padding: 56px 16px 0; display: flex; flex-direction: column; gap: 12px">
+
+<h1 style="margin: 0; font-size: 34px; font-weight: 700; letter-spacing: -0.5px">Progress</h1>
+
+<div role="group" aria-label="Time range" style="display: flex; gap: 2px; padding: 2px; border-radius: 12px; background: #14171C; border: 1px solid #262B33">
+<button aria-pressed="false" style="flex: 1; height: 40px; border-radius: 10px; background: none; border: none; color: #A3ACB9; font-size: 15px; font-weight: 600; font-family: inherit">Week</button>
+<button aria-pressed="true" style="flex: 1; height: 40px; border-radius: 10px; background: #262B33; border: none; color: #F4F6F8; font-size: 15px; font-weight: 600; font-family: inherit">Month</button>
+<button aria-pressed="false" style="flex: 1; height: 40px; border-radius: 10px; background: none; border: none; color: #A3ACB9; font-size: 15px; font-weight: 600; font-family: inherit">3 months</button>
+<button aria-pressed="false" style="flex: 1; height: 40px; border-radius: 10px; background: none; border: none; color: #A3ACB9; font-size: 15px; font-weight: 600; font-family: inherit">Year</button>
+</div>
+
+<section aria-label="Last 30 days totals" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{tiles}}" as="t" hint-placeholder-count="3">
+<div style="box-sizing: border-box; min-height: 76px; background: #14171C; border: 1px solid #262B33; border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 12px; color: #A3ACB9">{{t.label}}</span>
+<span style="font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums">{{t.value}} <span style="font-size: 12px; font-weight: 500; color: #A3ACB9">{{t.unit}}</span></span>
+<span style="font-size: 12px; color: {{t.subColor}}; font-weight: 600">{{t.sub}}</span>
+</div>
+</sc-for>
+</section>
+
+<section aria-label="Weekly volume" style="background: #14171C; border: 1px solid #262B33; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; align-items: baseline; justify-content: space-between"><h2 style="margin: 0; font-size: 17px; font-weight: 600">Weekly volume</h2><span style="font-size: 12px; color: #A3ACB9">kg per week</span></div>
+<svg role="img" aria-label="Weekly volume rose from 38,200 kilograms in the week of September 28 to 48,700 kilograms in the week of November 2" width="100%" viewBox="0 0 330 128" style="display: block">
+<g font-family="Inter, sans-serif" font-size="10" fill="#A3ACB9">
+<line x1="30" y1="100" x2="326" y2="100" stroke="#262B33"></line><line x1="30" y1="60" x2="326" y2="60" stroke="#262B33"></line><line x1="30" y1="20" x2="326" y2="20" stroke="#262B33"></line>
+<text x="0" y="103">30k</text><text x="0" y="63">40k</text><text x="0" y="23">50k</text>
+<text x="30" y="118" text-anchor="middle">Sep 28</text><text x="86" y="118" text-anchor="middle">Oct 5</text><text x="142" y="118" text-anchor="middle">Oct 12</text><text x="198" y="118" text-anchor="middle">Oct 19</text><text x="254" y="118" text-anchor="middle">Oct 26</text><text x="304" y="118" text-anchor="middle">Nov 2</text>
+</g>
+<polygon points="30,67.2 86,54 142,60.8 198,42.8 254,35.6 310,25.2 310,100 30,100" fill="#7FA6FF" fill-opacity="0.16"></polygon>
+<polyline points="30,67.2 86,54 142,60.8 198,42.8 254,35.6 310,25.2" fill="none" stroke="#7FA6FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+<g fill="#7FA6FF"><circle cx="30" cy="67.2" r="3.5"></circle><circle cx="86" cy="54" r="3.5"></circle><circle cx="142" cy="60.8" r="3.5"></circle><circle cx="198" cy="42.8" r="3.5"></circle><circle cx="254" cy="35.6" r="3.5"></circle><circle cx="310" cy="25.2" r="4.5"></circle></g>
+<text x="310" y="12" text-anchor="end" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#F4F6F8">48.7k</text>
+</svg>
+<a href="ProgressTable.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 15px; font-weight: 500; text-decoration: none; margin: -6px 0 -8px">View as table</a>
+</section>
+
+<section aria-label="Sets by muscle group" style="background: #14171C; border: 1px solid #262B33; border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: baseline; justify-content: space-between"><h2 style="margin: 0; font-size: 17px; font-weight: 600">Sets by muscle group</h2><span style="font-size: 12px; color: #A3ACB9">last 30 days</span></div>
+<sc-for list="{{muscles}}" as="m" hint-placeholder-count="5">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 72px; font-size: 13px">{{m.name}}</span>
+<div style="flex: 1; height: 8px; border-radius: 4px; background: #262B33"><div style="width: {{m.pct}}%; height: 8px; border-radius: 4px; background: #7FA6FF"></div></div>
+<span style="width: 36px; text-align: right; font-size: 13px; font-variant-numeric: tabular-nums; color: #A3ACB9">{{m.pct}}%</span>
+</div>
+</sc-for>
+</section>
+
+</div>
+
+<nav aria-label="Main tabs" style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; box-sizing: border-box; padding: 8px 8px 26px; display: flex; background: #0F1217; border-top: 1px solid #232831">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+<a href="{{t.href}}" style="flex: 1; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; font-size: 11px; font-weight: 600; color: {{t.color}}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.d}}"></path></svg><span>{{t.label}}</span></a>
+</sc-for>
+</nav>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const ACTIVE = 3;
+const tabs = [
+{ label: 'Home', href: 'Home.dc.html', d: 'M3 11.5 12 4l9 7.5M5 10v10h5v-6h4v6h5V10' },
+{ label: 'Workout', href: 'Start.dc.html', d: 'M6.5 6.5v11M3.5 9v6M17.5 6.5v11M20.5 9v6M6.5 12h11' },
+{ label: 'Exercises', href: 'Exercises.dc.html', d: 'M4 6h16M4 12h16M4 18h10' },
+{ label: 'Progress', href: 'Progress.dc.html', d: 'M4 19V9M10 19V5M16 19v-8M3 21h18' },
+{ label: 'Profile', href: 'Profile.dc.html', d: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c0-4 3.6-6 8-6s8 2 8 6' }
+].map((t, i) => ({ ...t, color: i === ACTIVE ? '#7FA6FF' : '#8B94A3' }));
+const tiles = [
+{ label: 'Workouts', value: '16', unit: '', sub: '+2 vs prior', subColor: '#34D399' },
+{ label: 'Volume', value: '178.4k', unit: 'kg', sub: '+9% vs prior', subColor: '#34D399' },
+{ label: 'Records', value: '5', unit: '', sub: 'this month', subColor: '#A3ACB9' }
+];
+const muscles = [
+{ name: 'Legs', pct: 28 },
+{ name: 'Chest', pct: 24 },
+{ name: 'Back', pct: 22 },
+{ name: 'Shoulders', pct: 14 },
+{ name: 'Arms', pct: 12 }
+];
+return { tabs, tiles, muscles };
+}
+}
+</script>
+
+
+</body></html>

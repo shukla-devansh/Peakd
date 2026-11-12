@@ -70,6 +70,8 @@
 		CAD000000000000000000039 = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CadenceWatch-Info.plist"; sourceTree = "<group>"; };
 		CAD00000000000000000003A = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CadenceWidgets-Info.plist"; sourceTree = "<group>"; };
 		CAD00000000000000000003B = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CadenceWidgets.entitlements; sourceTree = "<group>"; };
+		CAD00000000000000000003C = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
+		CAD00000000000000000003D = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Cadence-Personal.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -153,6 +155,8 @@
 				CAD000000000000000000039,
 				CAD00000000000000000003A,
 				CAD00000000000000000003B,
+				CAD00000000000000000003C,
+				CAD00000000000000000003D,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -397,15 +401,14 @@
 /* Begin XCBuildConfiguration section */
 		CAD000000000000000000005 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CAD00000000000000000003C /* Signing.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				BUNDLE_ID_PREFIX = com.cadenceapp;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -430,15 +433,14 @@
 		};
 		CAD000000000000000000006 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CAD00000000000000000003C /* Signing.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				BUNDLE_ID_PREFIX = com.cadenceapp;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -460,7 +462,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Config/Cadence.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(CADENCE_APP_ENTITLEMENTS)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
@@ -499,7 +501,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Config/Cadence.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(CADENCE_APP_ENTITLEMENTS)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
@@ -598,7 +600,7 @@
 		CAD000000000000000000031 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = Config/CadenceWidgets.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(CADENCE_WIDGET_ENTITLEMENTS)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
@@ -624,7 +626,7 @@
 		CAD000000000000000000032 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = Config/CadenceWidgets.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(CADENCE_WIDGET_ENTITLEMENTS)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;

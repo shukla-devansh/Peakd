@@ -1,0 +1,12 @@
+// Copy to Config/Local.xcconfig (git-ignored). Settings here override Signing.xcconfig.
+
+// Your Team ID: Xcode > Settings > Accounts > your team, or the OU field of your
+// "Apple Development" certificate.
+DEVELOPMENT_TEAM = ABCDE12345
+
+// Bundle IDs must be unique across all Apple accounts.
+BUNDLE_ID_PREFIX = com.yourname
+
+// Free (Personal Team) accounts can't sign Time Sensitive Notifications.
+// Use the personal entitlements; the rest timer alert still fires, just not as time-sensitive.
+CADENCE_APP_ENTITLEMENTS = Config/Cadence-Personal.entitlements

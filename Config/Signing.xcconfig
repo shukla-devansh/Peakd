@@ -1,0 +1,9 @@
+// Signing defaults for every target.
+// To run on your own iPhone: copy Local.xcconfig.example to Local.xcconfig (git-ignored)
+// and fill in your Team ID and a bundle prefix nobody else uses.
+BUNDLE_ID_PREFIX = com.cadenceapp
+DEVELOPMENT_TEAM =
+CADENCE_APP_ENTITLEMENTS = Config/Cadence.entitlements
+CADENCE_WIDGET_ENTITLEMENTS = Config/CadenceWidgets.entitlements
+
+#include? "Local.xcconfig"

@@ -19,8 +19,17 @@ struct NextSessionView: View {
 
     private var profile: UserProfile? { profiles.first { !$0.isGone } }
     private var unit: WeightUnit { profile?.unit ?? .kg }
-    private var plan: SessionPlan? {
-        CoachSnapshot(profile: profile, routines: routines, workouts: workouts, lighten: lighten).plan
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private var coach: CoachSnapshot {
+        CoachSnapshot(profile: profile, routines: routines, workouts: workouts, lighten: lighten)
+    }
+    private var plan: SessionPlan? { coach.plan }
+
+    /// Facts for the AI wording; nil when AI suggestions are off.
+    private func facts(for plan: SessionPlan, coach: CoachSnapshot) -> PlanFacts? {
+        guard profile?.aiSuggestions ?? true else { return nil }
+        return PlanFacts.make(plan: plan, fatigue: coach.fatigue, digests: coach.digests, unit: unit)
     }
     private var routine: Routine? {
         guard let plan else { return nil }
@@ -28,9 +37,12 @@ struct NextSessionView: View {
     }
 
     var body: some View {
+        let coach = coach
         Group {
-            if let plan {
-                content(plan)
+            if let plan = coach.plan {
+                let facts = facts(for: plan, coach: coach)
+                content(plan, explanation: facts.flatMap { appState.ai.wording(for: $0)?.explanation } ?? plan.explanation)
+                    .task(id: facts?.key) { if let facts { await appState.ai.prepare(facts) } }
             } else {
                 ScrollView {
                     EmptyStateCard(
@@ -48,7 +60,7 @@ struct NextSessionView: View {
         .sheet(item: $editing) { RoutineEditorView(target: $0) }
     }
 
-    private func content(_ plan: SessionPlan) -> some View {
+    private func content(_ plan: SessionPlan, explanation: String) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading, spacing: 0) {
@@ -64,17 +76,19 @@ struct NextSessionView: View {
                     Label("Why this plan", systemImage: "sparkle")
                         .font(Font.cadSubhead.weight(.semibold))
                         .foregroundStyle(Palette.accentText)
-                    Text(plan.explanation)
+                    Text(explanation)
                         .font(.cadFootnote)
                         .foregroundStyle(Palette.text.opacity(0.85))
                         .fixedSize(horizontal: false, vertical: true)
+                        .contentTransition(.opacity)
+                        .animation(reduceMotion ? nil : Motion.standard, value: explanation)
                     Text("Suggestions only. Change anything before you start.")
                         .font(.cadLabel)
                         .foregroundStyle(Palette.textSecondary)
                 }
                 .cadCallout(padding: 14)
                 .accessibilityElement(children: .combine)
-                .accessibilityLabel("Why this plan. \(plan.explanation)")
+                .accessibilityLabel("Why this plan. \(explanation)")
 
                 HStack {
                     Text("\(plan.exercises.count) \(plan.exercises.count == 1 ? "exercise" : "exercises")")

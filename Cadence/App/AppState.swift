@@ -16,6 +16,8 @@ final class AppState {
     let permissions = PermissionsService()
     let notifications: NotificationService
     let rest: RestTimerService
+    /// Foundation Models wording for the planner's text (falls back to the templates).
+    let ai = AIPlanner()
     /// Full-screen RestTimer from the Active rest bar.
     var isRestTimerPresented = false
 

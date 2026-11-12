@@ -24,8 +24,12 @@ struct HomeView: View {
                     header
                     let coach = CoachSnapshot(profile: profile, routines: routines, workouts: finished)
                     if !liveFinished.isEmpty, let plan = coach.plan, let profile {
+                        let facts = profile.aiSuggestions
+                            ? PlanFacts.make(plan: plan, fatigue: coach.fatigue, digests: coach.digests, unit: profile.unit)
+                            : nil
                         SuggestedWorkoutCard(
                             plan: plan,
+                            reason: facts.flatMap { appState.ai.wording(for: $0)?.homeReason } ?? plan.homeReason,
                             minutes: StarterPlan.estimatedMinutes(sets: plan.exercises.map {
                                 ($0.sets, $0.restSeconds ?? profile.defaultRestSeconds)
                             }),
@@ -33,6 +37,7 @@ struct HomeView: View {
                         ) {
                             appState.startWorkout(plan: plan, in: context)
                         }
+                        .task(id: facts?.key) { if let facts { await appState.ai.prepare(facts) } }
                     } else if let routine = routines.first(where: { !$0.isGone }), let profile {
                         StarterPlanCard(
                             name: routine.name,
@@ -202,6 +207,8 @@ struct StarterPlanCard: View {
 /// Home board: "Suggested for today" with the planner's routine.
 struct SuggestedWorkoutCard: View {
     let plan: SessionPlan
+    /// The planner's home line, or the AI rewording of it.
+    let reason: String
     let minutes: Int
     let showsSuggestion: Bool
     let onStart: () -> Void
@@ -220,7 +227,7 @@ struct SuggestedWorkoutCard: View {
                     .foregroundStyle(Palette.textSecondary)
             }
             if showsSuggestion {
-                Text(plan.homeReason)
+                Text(reason)
                     .font(.cadFootnote)
                     .foregroundStyle(Palette.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)

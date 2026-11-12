@@ -5,5 +5,17 @@
 	<!-- Read by AppGroup.identifier. Must match Cadence.entitlements. -->
 	<key>CadenceAppGroup</key>
 	<string>group.$(BUNDLE_ID_PREFIX).cadence</string>
+	<!-- cadence://workout reopens the running workout (Live Activity, Dynamic Island). -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>cadence</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

@@ -112,6 +112,11 @@ extension Font {
     static let cadSetNumber  = Font.title3.weight(.semibold).monospacedDigit()
     /// Big timers (rest ring, lock screen)
     static let cadTimer      = Font.system(.largeTitle, design: .default).weight(.bold).monospacedDigit()
+    /// Display-size timers (rest ring 64 pt, lock screen 40 pt). Pass a @ScaledMetric size so it
+    /// still follows Dynamic Type.
+    static func cadTimer(size: CGFloat) -> Font {
+        .system(size: size, weight: .bold).monospacedDigit()
+    }
 }
 
 // MARK: - Motion

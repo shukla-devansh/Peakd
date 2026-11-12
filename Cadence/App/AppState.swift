@@ -14,6 +14,24 @@ enum AppTab: Hashable, CaseIterable {
 final class AppState {
     var selectedTab: AppTab = .home
     let permissions = PermissionsService()
+    let notifications: NotificationService
+    let rest: RestTimerService
+    /// Full-screen RestTimer from the Active rest bar.
+    var isRestTimerPresented = false
+
+    init() {
+        let notifications = NotificationService()
+        self.notifications = notifications
+        self.rest = RestTimerService(effects: notifications)
+        notifications.onOpenWorkout = { [weak self] in self?.openRunningWorkout() }
+    }
+
+    /// Notification tap or Live Activity link.
+    func openRunningWorkout() {
+        guard session != nil else { return }
+        finishedWorkout = nil
+        isWorkoutPresented = true
+    }
 
     /// The workout in progress, if any (survives minimising).
     private(set) var session: WorkoutSession?
@@ -41,12 +59,16 @@ final class AppState {
 
     func finishWorkout() {
         guard let session else { return }
+        rest.stop()
+        isRestTimerPresented = false
         finishedWorkout = session.finish()
         self.session = nil
         if finishedWorkout == nil { isWorkoutPresented = false }
     }
 
     func cancelWorkout() {
+        rest.stop()
+        isRestTimerPresented = false
         session?.cancel()
         session = nil
         isWorkoutPresented = false
@@ -67,11 +89,15 @@ final class AppState {
         descriptor.fetchLimit = 1
         if let workout = try? context.fetch(descriptor).first {
             session = WorkoutSession(workout: workout, context: context)
+        } else {
+            rest.stop()   // a rest or Live Activity left over from a workout that no longer exists
         }
     }
 
     /// Before "Delete all data": forget everything that points at models about to be deleted.
     func reset() {
+        rest.stop()
+        isRestTimerPresented = false
         session = nil
         finishedWorkout = nil
         isWorkoutPresented = false

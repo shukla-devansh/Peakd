@@ -20,6 +20,10 @@ struct ActiveWorkoutView: View {
                 .padding(.horizontal, Space.screenMargin)
             ScrollView {
                 VStack(spacing: Space.sm) {
+                    if appState.rest.isRunning {
+                        RestBar()
+                            .transition(.opacity)
+                    }
                     if session.entries.isEmpty {
                         EmptyStateCard(
                             title: "No exercises yet",
@@ -42,11 +46,20 @@ struct ActiveWorkoutView: View {
                 .padding(.horizontal, Space.screenMargin)
                 .padding(.vertical, Space.sm)
                 .animation(Motion.standard, value: session.currentEntryID)
+                .animation(Motion.standard, value: appState.rest.isRunning)
             }
             .scrollDismissesKeyboard(.interactively)
         }
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomBar }
         .cadScreenBackground()
+        .fullScreenCover(isPresented: Binding(
+            get: { appState.isRestTimerPresented && appState.rest.isRunning },
+            set: { appState.isRestTimerPresented = $0 }
+        )) {
+            RestTimerView(session: session)
+                .environment(appState)
+                .preferredColorScheme(.dark)
+        }
         .sheet(isPresented: $showAddExercise) {
             AddExerciseSheet(
                 title: session.workout.displayName,
@@ -162,6 +175,8 @@ struct ExerciseCard: View {
     let entry: WorkoutExercise
     let unit: WeightUnit
 
+    @Environment(AppState.self) private var appState
+    @Query private var profiles: [UserProfile]
     @State private var rejectedSet = 0
 
     private var tracking: TrackingType { entry.exercise?.trackingType ?? .weightReps }
@@ -208,7 +223,7 @@ struct ExerciseCard: View {
                         tracking: tracking,
                         onEdit: { session.save() }
                     ) {
-                        if !session.toggleComplete(set, in: entry) { rejectedSet += 1 }
+                        complete(set)
                     }
                     .contextMenu {
                         Button("Delete set", systemImage: "trash", role: .destructive) {
@@ -244,6 +259,35 @@ struct ExerciseCard: View {
         .sensoryFeedback(.error, trigger: rejectedSet)
         .accessibilityElement(children: .contain)
         .accessibilityLabel(entry.exerciseName)
+    }
+
+    /// Ticks the set and starts the rest for this exercise (unless it was the workout's last set).
+    private func complete(_ set: SetLog) {
+        let wasCompleted = set.isCompleted
+        guard session.toggleComplete(set, in: entry) else {
+            rejectedSet += 1
+            return
+        }
+        guard !wasCompleted, set.isCompleted else { return }
+        let profile = profiles.first { !$0.isGone }
+        if profile?.restAlerts ?? true {
+            // Users who skipped setup were never asked; ask once, at the first rest.
+            // request() only shows the prompt when the user hasn't decided yet.
+            Task {
+                await appState.permissions.request(.notifications)
+                // The rest below was scheduled before the answer: schedule its alert again now.
+                appState.rest.setAlertsEnabled(appState.rest.alertsEnabled)
+            }
+        }
+        if let info = session.restInfo(after: set, in: entry, unit: unit) {
+            appState.rest.start(
+                seconds: session.restSeconds(for: entry, defaultRest: profile?.defaultRestSeconds ?? 90),
+                info: info,
+                alerts: profile?.restAlerts ?? true
+            )
+        } else {
+            appState.rest.skip()   // that was the last set: nothing to rest for
+        }
     }
 
     private func state(of set: SetLog) -> SetRowState {

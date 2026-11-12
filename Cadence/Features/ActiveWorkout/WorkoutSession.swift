@@ -178,6 +178,45 @@ final class WorkoutSession {
         return true
     }
 
+    // MARK: Rest
+
+    /// The routine's rest for this exercise, then the exercise's own, then the profile default.
+    func restSeconds(for entry: WorkoutExercise, defaultRest: Int) -> Int {
+        entry.restSeconds ?? entry.exercise?.defaultRestSeconds ?? defaultRest
+    }
+
+    /// The set the user will do next: the current exercise's first open set, else the next exercise's.
+    func nextUp() -> (entry: WorkoutExercise, set: SetLog)? {
+        if let entry = currentEntry, let set = activeSet(in: entry) { return (entry, set) }
+        for entry in entries {
+            if let set = activeSet(in: entry) { return (entry, set) }
+        }
+        return nil
+    }
+
+    /// What the rest screen, notification and Live Activity show after completing `set`.
+    /// nil when nothing is left to do (no rest after the last set).
+    func restInfo(after set: SetLog, in entry: WorkoutExercise, unit: WeightUnit) -> RestInfo? {
+        guard let (nextEntry, nextSet) = nextUp() else { return nil }
+        let previous = previousSet(for: nextEntry, index: nextSet.index)
+        let reps = nextSet.reps ?? previous?.reps
+        let lastTime = previous.flatMap { p -> String? in
+            p.reps == nil ? nil : WeightFormatter.setString(kg: p.weightKg, reps: p.reps, in: unit)
+        }
+        return RestInfo(
+            workoutName: workout.displayName,
+            workoutStart: workout.start,
+            exerciseName: entry.exerciseName,
+            afterSet: set.index,
+            nextExercise: nextEntry.exerciseName,
+            nextSet: nextSet.index,
+            nextWeight: nextSet.weightKg.map { WeightFormatter.number(kg: $0, in: unit) },
+            unitSymbol: unit.symbol,
+            nextReps: reps,
+            lastTime: lastTime
+        )
+    }
+
     // MARK: Ending
 
     /// Drops unfinished sets and empty exercises, stamps the end time and rebuilds records.

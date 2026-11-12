@@ -10,10 +10,14 @@ struct AddExerciseSheet: View {
     var title: String = "Add exercise"
     /// Exercises already in the workout or routine.
     var excluded: Set<PersistentIdentifier> = []
+    /// Names already in the workout, for "Suggested next". Empty in the routine editor.
+    var current: [String] = []
     let onAdd: ([Exercise]) -> Void
 
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \Exercise.name) private var exercises: [Exercise]
+    @Query private var profiles: [UserProfile]
+    @Query(filter: #Predicate<Workout> { $0.end != nil }) private var finished: [Workout]
     @State private var search = ""
     @State private var selected: [PersistentIdentifier] = []
     @State private var showNew = false
@@ -33,8 +37,20 @@ struct AddExerciseSheet: View {
         }
     }
 
+    private var suggestions: [NextExerciseSuggester.Suggestion] {
+        guard let profile = profiles.first(where: { !$0.isGone }), profile.aiSuggestions,
+              search.trimmingCharacters(in: .whitespaces).isEmpty else { return [] }
+        return NextExerciseSuggester.suggest(
+            current: current,
+            workouts: TrainingHistory.digests(from: finished),
+            library: TrainingHistory.candidates(from: available),
+            availableEquipment: profile.availableEquipment
+        )
+    }
+
     private var sections: [(MuscleGroup, [Exercise])] {
-        let grouped = Dictionary(grouping: filtered, by: \.primaryMuscle)
+        let suggested = Set(suggestions.map(\.name))
+        let grouped = Dictionary(grouping: filtered.filter { !suggested.contains($0.name) }, by: \.primaryMuscle)
         return MuscleGroup.allCases.compactMap { muscle in
             grouped[muscle].map { (muscle, $0) }
         }
@@ -53,6 +69,22 @@ struct AddExerciseSheet: View {
                             message: "Try another name, or create it as a new exercise.",
                             actionTitle: "New exercise"
                         ) { showNew = true }
+                    }
+                    let picks = suggestions
+                    if !picks.isEmpty {
+                        Label("Suggested next", systemImage: "sparkle")
+                            .textCase(.uppercase)
+                            .font(Font.cadFootnote.weight(.semibold))
+                            .tracking(1)
+                            .foregroundStyle(Palette.accentText)
+                            .padding(.bottom, Space.xxs)
+                            .accessibilityAddTraits(.isHeader)
+                        ForEach(picks) { pick in
+                            if let exercise = available.first(where: { $0.name == pick.name }) {
+                                ExercisePickRow(name: exercise.name, meta: pick.reason,
+                                                isSelected: selected.contains(exercise.persistentModelID)) { toggle(exercise) }
+                            }
+                        }
                     }
                     ForEach(sections, id: \.0) { muscle, items in
                         SectionLabel(muscle.title)

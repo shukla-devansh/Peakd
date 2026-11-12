@@ -63,7 +63,8 @@ struct ActiveWorkoutView: View {
         .sheet(isPresented: $showAddExercise) {
             AddExerciseSheet(
                 title: session.workout.displayName,
-                excluded: Set(session.entries.compactMap { $0.exercise?.persistentModelID })
+                excluded: Set(session.entries.compactMap { $0.exercise?.persistentModelID }),
+                current: session.entries.map(\.exerciseName)
             ) { session.add($0) }
         }
         .confirmationDialog("Cancel workout?", isPresented: $confirmCancel, titleVisibility: .visible) {
@@ -212,6 +213,15 @@ struct ExerciseCard: View {
                 .accessibilityLabel("Exercise options")
             }
 
+            if let suggestion, profile?.aiSuggestions ?? true {
+                Button {
+                    if let kg = suggestion.weightKg { session.applySuggestedWeight(kg, to: entry) }
+                } label: {
+                    StatusChip(chipText(suggestion), kind: .ai, compact: true)
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint(suggestion.weightKg == nil ? "" : "Fills this weight into the remaining sets")
+            }
             SetTableHeader(unit: unit, showsWeight: tracking == .weightReps, repsTitle: tracking == .time ? "Sec" : "Reps")
             VStack(spacing: 2) {
                 ForEach(entry.orderedSets) { set in
@@ -261,6 +271,25 @@ struct ExerciseCard: View {
         .accessibilityLabel(entry.exerciseName)
     }
 
+    private var profile: UserProfile? { profiles.first { !$0.isGone } }
+
+    /// Overload suggestion from this exercise's past sessions (not this workout).
+    private var suggestion: OverloadSuggestion? {
+        guard let exercise = entry.exercise, tracking != .time else { return nil }
+        let range = entry.repRange ?? StarterPlan.repRange(for: profile?.goal ?? .strength)
+        return OverloadEngine.suggest(
+            history: TrainingHistory.sessions(for: exercise, excluding: session.workout.persistentModelID),
+            repRange: range, equipment: exercise.equipment
+        )
+    }
+
+    /// "Try 42.5 kg × 8–10 · you hit 10 reps last time"
+    private func chipText(_ s: OverloadSuggestion) -> String {
+        let range = "\(s.repRange.lowerBound)–\(s.repRange.upperBound)"
+        guard let kg = s.weightKg else { return "Try \(s.targetReps) reps · \(s.chipReason)" }
+        return "Try \(WeightFormatter.string(kg: kg, in: unit)) × \(range) · \(s.chipReason)"
+    }
+
     /// Ticks the set and starts the rest for this exercise (unless it was the workout's last set).
     private func complete(_ set: SetLog) {
         let wasCompleted = set.isCompleted
@@ -269,7 +298,6 @@ struct ExerciseCard: View {
             return
         }
         guard !wasCompleted, set.isCompleted else { return }
-        let profile = profiles.first { !$0.isGone }
         if profile?.restAlerts ?? true {
             // Users who skipped setup were never asked; ask once, at the first rest.
             // request() only shows the prompt when the user hasn't decided yet.
@@ -449,7 +477,10 @@ struct WorkoutFlowView: View {
                     Color.clear
                 }
             }
+            .historyDestinations()
         }
+        // A new workout started from NextSession gets a fresh stack (drops the pushed plan screen).
+        .id(appState.session?.workout.persistentModelID)
         .preferredColorScheme(.dark)
     }
 }

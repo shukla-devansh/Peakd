@@ -7,6 +7,7 @@ import SwiftUI
 struct StartWorkoutView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var context
+    @Query private var profiles: [UserProfile]
     @Query(sort: \Routine.createdAt) private var routines: [Routine]
     @Query(filter: #Predicate<Workout> { $0.end != nil }, sort: \Workout.start, order: .reverse)
     private var finished: [Workout]
@@ -27,6 +28,15 @@ struct StartWorkoutView: View {
                               systemImage: appState.session == nil ? "plus" : "play.fill")
                     }
                     .buttonStyle(.cadPrimary)
+
+                    if let profile = profiles.first(where: { !$0.isGone }), profile.aiSuggestions, !finished.isEmpty,
+                       let plan = CoachSnapshot(profile: profile, routines: routines, workouts: finished).plan {
+                        NavigationLink(value: HomeRoute.nextSession(lighten: false)) {
+                            SuggestedRoutineRow(title: "Suggested: \(plan.routineName)",
+                                                subtitle: plan.basis.prefix(1).uppercased() + plan.basis.dropFirst())
+                        }
+                        .buttonStyle(.plain)
+                    }
 
                     VStack(alignment: .leading, spacing: Space.xxs) {
                         HStack {
@@ -79,6 +89,7 @@ struct StartWorkoutView: View {
             }
             .cadScreenBackground()
             .navigationTitle("Workout")
+            .historyDestinations()
             .sheet(item: $editing) { target in
                 RoutineEditorView(target: target)
             }
@@ -110,6 +121,34 @@ struct StartWorkoutView: View {
 
     private func lastDone(_ routine: Routine) -> Date? {
         finished.first { !$0.isGone && $0.routineName == routine.name }?.start
+    }
+}
+
+/// Start board: accent callout row leading to NextSession.
+struct SuggestedRoutineRow: View {
+    let title: String
+    let subtitle: String
+
+    var body: some View {
+        HStack(spacing: Space.sm) {
+            Image(systemName: "sparkle")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(Palette.accentText)
+                .frame(width: 40, height: 40)
+                .background(Palette.accent.opacity(0.22), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.cadHeadline).foregroundStyle(Palette.text)
+                Text(subtitle).font(.cadFootnote).foregroundStyle(Palette.textSecondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            RowChevron()
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 14)
+        .frame(minHeight: 64)
+        .cadCallout(padding: 0)
+        .accessibilityElement(children: .combine)
     }
 }
 

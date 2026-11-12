@@ -40,6 +40,33 @@ final class WorkoutSession {
         return session
     }
 
+    /// From a SessionPlan (NextSession → "Start this workout"): the plan's sets, rep ranges and
+    /// weights, which the user has seen and accepted.
+    static func start(plan: SessionPlan, in context: ModelContext, at date: Date = .now) -> WorkoutSession {
+        let session = start(routine: nil, in: context, at: date)
+        session.workout.routineName = plan.routineName
+        let names = Set(plan.exercises.map(\.name))
+        let library = (try? context.fetch(FetchDescriptor<Exercise>())) ?? []
+        let byName = Dictionary(library.filter { names.contains($0.name) && !$0.isGone }.map { ($0.name, $0) },
+                                uniquingKeysWith: { a, b in a.isCustom ? b : a })
+        for planned in plan.exercises {
+            guard let exercise = byName[planned.name] else { continue }
+            session.append(exercise, setCount: planned.sets, repRange: planned.repRange, restSeconds: planned.restSeconds)
+            if let weight = planned.weightKg, let entry = session.workout.exercises.last {
+                for set in entry.sets { set.weightKg = weight }
+            }
+        }
+        session.currentEntryID = session.workout.orderedExercises.first?.persistentModelID
+        session.save()
+        return session
+    }
+
+    /// "Try 42.5 kg" chip: fill the suggested weight into the sets not done yet.
+    func applySuggestedWeight(_ kg: Double, to entry: WorkoutExercise) {
+        for set in entry.sets where !set.isCompleted { set.weightKg = kg }
+        save()
+    }
+
     /// "Repeat workout" from History: same exercises and set counts, weights from that session.
     static func repeating(_ past: Workout, in context: ModelContext, at date: Date = .now) -> WorkoutSession {
         let session = start(routine: nil, in: context, at: date)

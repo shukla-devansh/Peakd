@@ -22,7 +22,18 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     header
-                    if let routine = routines.first(where: { !$0.isGone }), let profile {
+                    let coach = CoachSnapshot(profile: profile, routines: routines, workouts: finished)
+                    if !liveFinished.isEmpty, let plan = coach.plan, let profile {
+                        SuggestedWorkoutCard(
+                            plan: plan,
+                            minutes: StarterPlan.estimatedMinutes(sets: plan.exercises.map {
+                                ($0.sets, $0.restSeconds ?? profile.defaultRestSeconds)
+                            }),
+                            showsSuggestion: profile.aiSuggestions
+                        ) {
+                            appState.startWorkout(plan: plan, in: context)
+                        }
+                    } else if let routine = routines.first(where: { !$0.isGone }), let profile {
                         StarterPlanCard(
                             name: routine.name,
                             meta: StarterPlanCard.meta(for: routine, defaultRest: profile.defaultRestSeconds),
@@ -35,7 +46,14 @@ struct HomeView: View {
                         }
                     }
                     HStack(alignment: .top, spacing: 10) {
-                        FatigueNotEnoughDataCard(logged: finished.count)
+                        NavigationLink(value: HomeRoute.fatigue) {
+                            if let report = coach.fatigue {
+                                FatigueScoreCard(report: report)
+                            } else {
+                                FatigueNotEnoughDataCard(logged: liveFinished.count)
+                            }
+                        }
+                        .buttonStyle(.plain)
                         ThisWeekCard(finished: finished, daysPerWeek: profile?.daysPerWeek ?? 4)
                     }
                     recent
@@ -178,6 +196,74 @@ struct StarterPlanCard: View {
         let count = routine.items.count
         let minutes = StarterPlan.estimatedMinutes(for: routine, defaultRest: defaultRest)
         return "\(count) \(count == 1 ? "exercise" : "exercises") · about \(minutes) min"
+    }
+}
+
+/// Home board: "Suggested for today" with the planner's routine.
+struct SuggestedWorkoutCard: View {
+    let plan: SessionPlan
+    let minutes: Int
+    let showsSuggestion: Bool
+    let onStart: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if showsSuggestion {
+                StatusChip("Suggested for today", kind: .ai, compact: true)
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(plan.routineName)
+                    .font(.cadTitle)
+                    .foregroundStyle(Palette.text)
+                Text("\(plan.exercises.count) \(plan.exercises.count == 1 ? "exercise" : "exercises") · about \(minutes) min")
+                    .font(.cadSubhead)
+                    .foregroundStyle(Palette.textSecondary)
+            }
+            if showsSuggestion {
+                Text(plan.homeReason)
+                    .font(.cadFootnote)
+                    .foregroundStyle(Palette.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            HStack(spacing: Space.xs) {
+                Button("Start workout", action: onStart)
+                    .buttonStyle(.cad(.primary, size: .compact))
+                NavigationLink(value: HomeRoute.nextSession(lighten: false)) {
+                    Text("Edit plan")
+                }
+                .buttonStyle(.cad(.elevated, size: .compact, fullWidth: false))
+                .frame(minWidth: 104)
+            }
+            .padding(.top, 2)
+        }
+        .cadCard()
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Suggested workout")
+    }
+}
+
+/// Home board fatigue card: ring + band word (colour plus text).
+struct FatigueScoreCard: View {
+    let report: FatigueReport
+
+    var body: some View {
+        HStack(spacing: Space.sm) {
+            FatigueRing(score: report.score)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Fatigue")
+                    .font(.cadFootnote)
+                    .foregroundStyle(Palette.textSecondary)
+                Text(report.band.title)
+                    .font(Font.cadHeadline.weight(.bold))
+                    .foregroundStyle(report.band.tone.foreground)
+            }
+            Spacer(minLength: 0)
+        }
+        .frame(maxHeight: .infinity)
+        .cadCard(padding: 14)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Fatigue \(report.score), \(report.band.title)")
+        .accessibilityHint("Shows what is driving it")
     }
 }
 

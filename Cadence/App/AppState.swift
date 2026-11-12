@@ -49,6 +49,15 @@ final class AppState {
         isWorkoutPresented = true
     }
 
+    /// NextSession → "Start this workout".
+    func startWorkout(plan: SessionPlan, in context: ModelContext) {
+        if session == nil {
+            session = WorkoutSession.start(plan: plan, in: context)
+        }
+        finishedWorkout = nil
+        isWorkoutPresented = true
+    }
+
     func repeatWorkout(_ past: Workout, in context: ModelContext) {
         if session == nil {
             session = WorkoutSession.repeating(past, in: context)
@@ -72,6 +81,11 @@ final class AppState {
         session?.cancel()
         session = nil
         isWorkoutPresented = false
+    }
+
+    /// NextSession reached from the Summary: leave the Summary before starting the next workout.
+    func closeSummaryIfShown() {
+        finishedWorkout = nil
     }
 
     /// Summary → Done.

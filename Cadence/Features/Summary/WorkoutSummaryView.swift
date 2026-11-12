@@ -66,11 +66,7 @@ struct WorkoutSummaryView: View {
                     Button("Done") { appState.closeSummary() }
                         .buttonStyle(.cad(.elevated, fullWidth: false))
                         .frame(minWidth: 104)
-                    Button {
-                        // Phase 5 opens NextSession here.
-                        appState.closeSummary()
-                        appState.selectedTab = .workout
-                    } label: {
+                    NavigationLink(value: HomeRoute.nextSession(lighten: false)) {
                         Label("Plan next session", systemImage: "sparkle")
                     }
                     .buttonStyle(.cadPrimary)

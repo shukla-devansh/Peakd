@@ -132,6 +132,8 @@ struct HistoryDestination: Hashable {
 
 enum HomeRoute: Hashable {
     case history
+    case fatigue
+    case nextSession(lighten: Bool)
 }
 
 extension View {
@@ -148,6 +150,8 @@ private struct HistoryDestinations: ViewModifier {
             .navigationDestination(for: HomeRoute.self) { route in
                 switch route {
                 case .history: HistoryView()
+                case .fatigue: FatigueView()
+                case .nextSession(let lighten): NextSessionView(lighten: lighten)
                 }
             }
             .navigationDestination(for: HistoryDestination.self) { destination in

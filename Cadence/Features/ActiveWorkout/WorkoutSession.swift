@@ -171,7 +171,7 @@ final class WorkoutSession {
     /// Ticks a set off (or back on). Empty fields are filled from the set above, then from last
     /// session's same set. Returns false if the set still lacks a required value.
     @discardableResult
-    func toggleComplete(_ set: SetLog, in entry: WorkoutExercise, at date: Date = .now) -> Bool {
+    func toggleComplete(_ set: SetLog, in entry: WorkoutExercise, source: SetSource = .manual, at date: Date = .now) -> Bool {
         if set.isCompleted {
             set.isCompleted = false
             set.completedAt = nil
@@ -197,7 +197,7 @@ final class WorkoutSession {
 
         set.isCompleted = true
         set.completedAt = date
-        set.source = .manual
+        set.source = source
         if isFinished(entry), let next = entries.first(where: { !isFinished($0) }) {
             currentEntryID = next.persistentModelID
         }

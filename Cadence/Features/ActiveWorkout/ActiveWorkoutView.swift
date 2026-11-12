@@ -11,8 +11,19 @@ struct ActiveWorkoutView: View {
     @State private var showAddExercise = false
     @State private var confirmCancel = false
     @State private var confirmEmptyFinish = false
+    @State private var voiceEntry: WorkoutExercise?
 
     private var unit: WeightUnit { profiles.first(where: { !$0.isGone })?.unit ?? .kg }
+
+    /// The exercise a voice set would go to; nil hides the mic (voice off, time-tracked
+    /// exercise, nothing to log, or speech restricted on this device).
+    private var voiceTarget: WorkoutExercise? {
+        guard profiles.first(where: { !$0.isGone })?.voiceLogging ?? true,
+              appState.permissions.state(.voice) != .unavailable,
+              let entry = session.currentEntry,
+              (entry.exercise?.trackingType ?? .weightReps) != .time else { return nil }
+        return entry
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -59,6 +70,10 @@ struct ActiveWorkoutView: View {
             RestTimerView(session: session)
                 .environment(appState)
                 .preferredColorScheme(.dark)
+        }
+        .sheet(item: $voiceEntry) { entry in
+            VoiceLogSheet(session: session, entry: entry, unit: unit)
+                .environment(appState)
         }
         .sheet(isPresented: $showAddExercise) {
             AddExerciseSheet(
@@ -134,6 +149,19 @@ struct ActiveWorkoutView: View {
 
     private var bottomBar: some View {
         HStack(spacing: Space.sm) {
+            if let target = voiceTarget {
+                Button {
+                    voiceEntry = target
+                } label: {
+                    Image(systemName: "mic")
+                        .font(.system(size: 24, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 56, height: 56)
+                        .background(Palette.accent, in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Log a set by voice")
+            }
             Button("Add exercise") { showAddExercise = true }
                 .buttonStyle(.cadSecondary)
             Button("Cancel") { confirmCancel = true }
@@ -165,6 +193,32 @@ struct ActiveWorkoutView: View {
 }
 
 @MainActor
+extension AppState {
+    /// After a set is ticked off (by hand or by voice): ask for notifications once, then start the
+    /// rest for this exercise, or skip it if that was the workout's last set.
+    func didComplete(_ set: SetLog, in entry: WorkoutExercise, session: WorkoutSession,
+                     profile: UserProfile?, unit: WeightUnit) {
+        if profile?.restAlerts ?? true {
+            // Users who skipped setup were never asked; ask once, at the first rest.
+            // request() only shows the prompt when the user hasn't decided yet.
+            Task {
+                await permissions.request(.notifications)
+                // The rest below was scheduled before the answer: schedule its alert again now.
+                rest.setAlertsEnabled(rest.alertsEnabled)
+            }
+        }
+        if let info = session.restInfo(after: set, in: entry, unit: unit) {
+            rest.start(
+                seconds: session.restSeconds(for: entry, defaultRest: profile?.defaultRestSeconds ?? 90),
+                info: info,
+                alerts: profile?.restAlerts ?? true
+            )
+        } else {
+            rest.skip()   // that was the last set: nothing to rest for
+        }
+    }
+}
+
 func dismissKeyboard() {
     UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
 }
@@ -298,24 +352,7 @@ struct ExerciseCard: View {
             return
         }
         guard !wasCompleted, set.isCompleted else { return }
-        if profile?.restAlerts ?? true {
-            // Users who skipped setup were never asked; ask once, at the first rest.
-            // request() only shows the prompt when the user hasn't decided yet.
-            Task {
-                await appState.permissions.request(.notifications)
-                // The rest below was scheduled before the answer: schedule its alert again now.
-                appState.rest.setAlertsEnabled(appState.rest.alertsEnabled)
-            }
-        }
-        if let info = session.restInfo(after: set, in: entry, unit: unit) {
-            appState.rest.start(
-                seconds: session.restSeconds(for: entry, defaultRest: profile?.defaultRestSeconds ?? 90),
-                info: info,
-                alerts: profile?.restAlerts ?? true
-            )
-        } else {
-            appState.rest.skip()   // that was the last set: nothing to rest for
-        }
+        appState.didComplete(set, in: entry, session: session, profile: profile, unit: unit)
     }
 
     private func state(of set: SetLog) -> SetRowState {

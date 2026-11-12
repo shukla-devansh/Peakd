@@ -55,6 +55,10 @@ enum Palette {
     // AI callout card ("Why this plan") and selected radio card
     static let calloutFill   = accent.opacity(0.12)
     static let calloutBorder = accentText.opacity(0.35)
+
+    // Personal-records card (Summary)
+    static let recordCalloutFill   = record.opacity(0.10)
+    static let recordCalloutBorder = record.opacity(0.35)
 }
 
 // MARK: - Spacing (4 pt grid)

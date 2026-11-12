@@ -55,6 +55,22 @@ enum WeightFormatter {
         return kilograms(from: value, in: unit)
     }
 
+    /// Text for an editable weight field: no grouping separators, so it parses back cleanly.
+    static func fieldString(kg: Double?, in unit: WeightUnit, locale: Locale = .current) -> String {
+        guard let kg else { return "" }
+        return displayValue(kg: kg, in: unit)
+            .formatted(.number.precision(.fractionLength(0...2)).grouping(.never).locale(locale))
+    }
+
+    /// Workout volume, whole units: "12,480 kg". `compact` gives "178.4k kg" for month totals.
+    static func volume(kg: Double, in unit: WeightUnit, compact: Bool = false, locale: Locale = .current) -> String {
+        let value = (unit == .kg ? kg : kg * poundsPerKilogram).rounded()
+        let number = compact && value >= 10_000
+            ? (value / 1000).formatted(.number.precision(.fractionLength(0...1)).locale(locale)) + "k"
+            : value.formatted(.number.precision(.fractionLength(0)).locale(locale))
+        return "\(number) \(unit.symbol)"
+    }
+
     // MARK: Helpers
 
     static func round(_ value: Double, to step: Double) -> Double {

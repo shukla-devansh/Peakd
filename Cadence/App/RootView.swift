@@ -1,6 +1,6 @@
 //  RootView.swift
 //  No profile → onboarding. Otherwise the native TabView (Liquid Glass on iOS 26).
-//  Phase 3 adds the minimised-workout bar.
+//  A running workout shows as a bar above the tab bar and opens full screen.
 
 import SwiftData
 import SwiftUI
@@ -8,6 +8,7 @@ import SwiftUI
 struct RootView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.modelContext) private var context
     @Query private var profiles: [UserProfile]
 
     var body: some View {
@@ -28,6 +29,18 @@ struct RootView: View {
     private var tabs: some View {
         @Bindable var appState = appState
 
+        return tabView
+            .workoutAccessory(session: appState.session) { appState.isWorkoutPresented = true }
+            .fullScreenCover(isPresented: $appState.isWorkoutPresented) {
+                WorkoutFlowView()
+                    .environment(appState)
+            }
+            .task { appState.resumeUnfinishedWorkout(in: context) }
+    }
+
+    private var tabView: some View {
+        @Bindable var appState = appState
+
         return TabView(selection: $appState.selectedTab) {
             Tab("Home", systemImage: "house", value: AppTab.home) {
                 HomeView()
@@ -46,6 +59,22 @@ struct RootView: View {
             }
         }
         .tint(Palette.accentText)
+    }
+}
+
+private extension View {
+    /// The minimised workout above the tab bar (iOS 26 bottom accessory). Only attached while a
+    /// workout runs: an empty accessory would still draw its capsule.
+    @ViewBuilder
+    func workoutAccessory(session: WorkoutSession?, open: @escaping () -> Void) -> some View {
+        if let session, !session.workout.isGone {
+            tabViewBottomAccessory {
+                MiniWorkoutBar(workoutName: session.workout.displayName,
+                               startDate: session.workout.start, chrome: false, action: open)
+            }
+        } else {
+            self
+        }
     }
 }
 

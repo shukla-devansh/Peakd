@@ -1,13 +1,15 @@
 //  HomeView.swift
-//  Board 14 (HomeEmpty). Phase 3 adds the recent list and in-progress bar; phase 5 the suggested
-//  workout and the fatigue ring (Home board).
+//  Boards 14 (HomeEmpty) and 01 (Home). Phase 5 replaces the starter card with the suggested
+//  workout and the "Not enough data" card with the fatigue ring.
 
 import SwiftData
 import SwiftUI
 
 struct HomeView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.modelContext) private var context
     @Query private var profiles: [UserProfile]
+    @State private var editingRoutine: RoutineEditorTarget?
     @Query(sort: \Routine.createdAt) private var routines: [Routine]
     @Query(filter: #Predicate<Workout> { $0.end != nil }, sort: \Workout.start, order: .reverse)
     private var finished: [Workout]
@@ -27,9 +29,9 @@ struct HomeView: View {
                             explanation: StarterPlan.explanation(daysPerWeek: profile.daysPerWeek,
                                                                  equipment: profile.availableEquipment)
                         ) {
-                            appState.selectedTab = .workout
+                            appState.startWorkout(routine: routine, in: context)
                         } onEdit: {
-                            appState.selectedTab = .workout
+                            editingRoutine = .existing(routine)
                         }
                     }
                     HStack(alignment: .top, spacing: 10) {
@@ -45,6 +47,21 @@ struct HomeView: View {
             .cadStatusBarBackground()
             .cadScreenBackground()
             .toolbar(.hidden, for: .navigationBar)
+            .historyDestinations()
+            .sheet(item: $editingRoutine) { RoutineEditorView(target: $0) }
+        }
+    }
+
+    private var unit: WeightUnit { profile?.unit ?? .kg }
+    private var liveFinished: [Workout] { finished.filter { !$0.isGone } }
+
+    /// "Good afternoon" once there's history; "Welcome" before the first workout (HomeEmpty).
+    private var greeting: String {
+        guard !liveFinished.isEmpty else { return "Welcome" }
+        switch Calendar.current.component(.hour, from: .now) {
+        case 5..<12: return "Good morning"
+        case 12..<18: return "Good afternoon"
+        default: return "Good evening"
         }
     }
 
@@ -54,7 +71,7 @@ struct HomeView: View {
                 Text(Date.now, format: .dateTime.weekday(.wide).day().month(.wide))
                     .font(.cadFootnote)
                     .foregroundStyle(Palette.textSecondary)
-                Text("Welcome")
+                Text(greeting)
                     .font(.cadScreenTitle)
                     .foregroundStyle(Palette.text)
                     .accessibilityAddTraits(.isHeader)
@@ -66,22 +83,54 @@ struct HomeView: View {
         }
     }
 
+    @ViewBuilder
     private var recent: some View {
         VStack(alignment: .leading, spacing: Space.xs) {
-            Text("Recent")
-                .font(.cadHeadline)
-                .foregroundStyle(Palette.text)
-                .accessibilityAddTraits(.isHeader)
-            EmptyStateCard(
-                title: "No workouts yet",
-                message: "Finished workouts show here with time and total volume. Progress charts fill in after your first week.",
-                actionTitle: "Browse routines"
-            ) {
-                appState.selectedTab = .workout
+            if liveFinished.isEmpty {
+                Text("Recent")
+                    .font(.cadHeadline)
+                    .foregroundStyle(Palette.text)
+                    .accessibilityAddTraits(.isHeader)
+                EmptyStateCard(
+                    title: "No workouts yet",
+                    message: "Finished workouts show here with time and total volume. Progress charts fill in after your first week.",
+                    actionTitle: "Browse routines"
+                ) {
+                    appState.selectedTab = .workout
+                }
+            } else {
+                HStack {
+                    Text("Recent")
+                        .font(.cadHeadline)
+                        .foregroundStyle(Palette.text)
+                        .accessibilityAddTraits(.isHeader)
+                    Spacer()
+                    NavigationLink(value: HomeRoute.history) {
+                        Text("See all")
+                            .font(Font.cadSubhead.weight(.medium))
+                            .foregroundStyle(Palette.accentText)
+                            .frame(minHeight: Size.minTouch)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+                ForEach(liveFinished.prefix(2)) { workout in
+                    NavigationLink(value: HistoryDestination(id: workout.persistentModelID)) {
+                        ListRowCard(title: workout.displayName, subtitle: recentMeta(workout), systemImage: "dumbbell")
+                    }
+                    .buttonStyle(.plain)
+                }
             }
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Recent workouts")
+    }
+
+    /// "Monday · 52 min · 9,860 kg"
+    private func recentMeta(_ workout: Workout) -> String {
+        [workout.start.formatted(.dateTime.weekday(.wide)),
+         DurationFormat.minutes(workout.duration()),
+         WeightFormatter.volume(kg: WorkoutMetrics.volume(of: workout), in: unit)].joined(separator: " · ")
     }
 }
 

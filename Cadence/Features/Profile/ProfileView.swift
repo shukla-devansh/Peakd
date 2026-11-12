@@ -188,8 +188,8 @@ private struct ProfileForm: View {
 
     private func deleteAll() {
         do {
+            appState.reset()   // drop the running workout before its models are deleted
             try DataStore.deleteAll(in: context)
-            appState.selectedTab = .home
         } catch {
             context.rollback()
         }

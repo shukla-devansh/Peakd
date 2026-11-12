@@ -19,6 +19,8 @@ private enum SetColumns {
 struct SetTableHeader: View {
     let unit: WeightUnit
     var showsWeight = true
+    /// "Reps", or "Sec" for timed exercises.
+    var repsTitle = "Reps"
 
     @ScaledMetric(relativeTo: .caption) private var setWidth = SetColumns.set
     @ScaledMetric(relativeTo: .caption) private var weightWidth = SetColumns.weight
@@ -31,7 +33,7 @@ struct SetTableHeader: View {
             if showsWeight {
                 Text(unit.symbol).frame(width: weightWidth)
             }
-            Text("Reps").frame(width: repsWidth)
+            Text(repsTitle).frame(width: repsWidth)
             Color.clear.frame(width: SetColumns.check, height: 1)
         }
         .textCase(.uppercase)
@@ -54,6 +56,8 @@ struct SetRow: View {
     let state: SetRowState
     let unit: WeightUnit
     var showsWeight = true
+    /// VoiceOver name of the second field: "repetitions" or "seconds".
+    var repsSpokenName = "repetitions"
     let onToggleComplete: () -> Void
 
     @ScaledMetric(relativeTo: .headline) private var setWidth = SetColumns.set
@@ -82,7 +86,7 @@ struct SetRow: View {
                     .accessibilityLabel("Set \(number) weight in \(unit.spokenName)")
             }
             field(text: $reps, keyboard: .numberPad, width: repsWidth)
-                .accessibilityLabel("Set \(number) repetitions")
+                .accessibilityLabel("Set \(number) \(repsSpokenName)")
 
             checkButton
         }

@@ -14,7 +14,7 @@ struct WatchMessagesTests {
     }
 
     @Test(arguments: [
-        WatchCommand.logSet(weightKg: 45, reps: 8), .logSet(weightKg: nil, reps: 12), .skipRest,
+        WatchCommand.logSet(weightKg: 45, reps: 8), .logSet(weightKg: nil, reps: 12), .logSet(weightKg: 40, reps: 10, voice: true), .skipRest,
         .adjustRest(seconds: 15), .heartRate(bpm: 128, at: Date(timeIntervalSince1970: 1_800_000_000)), .activeEnergy(kcal: 410),
     ])
     func commandsRoundTrip(_ command: WatchCommand) {

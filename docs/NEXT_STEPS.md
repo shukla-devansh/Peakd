@@ -62,9 +62,14 @@ These can't be tested in the simulator:
   rest controls and heart rate. The Watch runs an `HKWorkoutSession` for live heart rate and
   discards its own workout, so only the iPhone's is saved to Health.
 - **Live heart rate** shows next to the timer on the active workout.
+- **Voice on the Watch:** the mic button next to Log set opens watchOS Dictation (apps can't use
+  the speech framework on watchOS). The text goes through the same `VoiceSetParser` as the iPhone
+  (now in `Shared/Voice/`), then opens Edit set prefilled; anything missing is marked "Needed" and
+  set with the Crown. Nothing is saved until Save set. Hidden when Voice logging is off in Profile.
 
 Still to check on real hardware: live heart rate and calories (the simulator has none), the
-haptic at the end of rest, and the workout appearing in the Health app after Finish.
+haptic at the end of rest, the workout appearing in the Health app after Finish, and Watch
+dictation (say "45 kilos for 8", then "50 kilos" to see the Needed state).
 
 To test in the simulator: pair an Apple Watch Series 11 (46 mm) simulator with the iPhone
 simulator (Xcode → Window → Devices and Simulators), run the iPhone app, start a workout, and

@@ -58,10 +58,20 @@ struct WatchIdleView: View {
 
 // MARK: - Screen 1: live workout
 
+/// What Watch dictation heard, parsed by the same VoiceSetParser as the iPhone.
+struct WatchVoiceEntry: Identifiable, Hashable {
+    let id = UUID()
+    let transcript: String
+    let weightKg: Double?
+    let reps: Int?
+    let missing: Set<VoiceParseResult.Field>
+}
+
 struct WatchLiveView: View {
     let state: WatchWorkoutState
     let now: Date
     @Environment(WatchConnector.self) private var connector
+    @State private var voiceEntry: WatchVoiceEntry?
 
     var body: some View {
         ScrollView {
@@ -97,13 +107,27 @@ struct WatchLiveView: View {
                     if let kcal = connector.activeEnergyKcal {
                         Text("\(Int(kcal.rounded())) kcal").font(.cadLabel).foregroundStyle(Palette.textSecondary)
                     }
-                    NavigationLink {
-                        WatchEditSetView(state: state)
-                    } label: {
-                        Label("Log set", systemImage: "checkmark")
-                            .frame(maxWidth: .infinity)
+                    HStack(spacing: 6) {
+                        NavigationLink {
+                            WatchEditSetView(state: state)
+                        } label: {
+                            Label("Log set", systemImage: "checkmark")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .tint(Palette.accent)
+                        if state.voiceLogging {
+                            // watchOS has no speech framework for apps: Dictation gives the text,
+                            // and the shared parser turns it into weight and reps.
+                            TextFieldLink(prompt: Text("Say “45 kilos for 8”")) {
+                                Image(systemName: "mic.fill")
+                                    .frame(maxWidth: .infinity)
+                            } onSubmit: { text in
+                                parse(text)
+                            }
+                            .frame(width: 52)
+                            .accessibilityLabel("Log a set by voice")
+                        }
                     }
-                    .tint(Palette.accent)
                     .padding(.top, 2)
                 } else {
                     Text("Add an exercise on your iPhone.")
@@ -112,8 +136,19 @@ struct WatchLiveView: View {
                 }
             }
         }
+        .navigationDestination(item: $voiceEntry) { entry in
+            WatchEditSetView(state: state, voice: entry)
+        }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Live workout")
+    }
+
+    private func parse(_ text: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        let result = VoiceSetParser.parse(trimmed, context: VoiceParseContext(
+            unit: state.unit, currentWeightKg: state.weightKg, tracksWeight: state.tracksWeight))
+        voiceEntry = WatchVoiceEntry(transcript: trimmed, weightKg: result.weightKg, reps: result.reps, missing: result.missing)
     }
 }
 
@@ -121,6 +156,8 @@ struct WatchLiveView: View {
 
 struct WatchEditSetView: View {
     let state: WatchWorkoutState
+    /// Set when opened from dictation: prefilled, and missing fields marked "Needed".
+    var voice: WatchVoiceEntry?
     @Environment(WatchConnector.self) private var connector
     @Environment(\.dismiss) private var dismiss
 
@@ -128,16 +165,26 @@ struct WatchEditSetView: View {
     @FocusState private var focus: Field?
     @State private var weight: Double = 0     // in the display unit
     @State private var reps: Double = 0
+    /// Fields dictation didn't catch, until the Crown sets them.
+    @State private var needed: Set<VoiceParseResult.Field> = []
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
+            if let voice {
+                Text("“\(voice.transcript)”")
+                    .font(.cadLabel)
+                    .foregroundStyle(Palette.textSecondary)
+                    .lineLimit(2)
+                    .accessibilityLabel("What I heard: \(voice.transcript)")
+            }
             HStack(spacing: 6) {
                 if state.tracksWeight {
-                    box("Weight", value: weight.formatted(.number.precision(.fractionLength(0...1))), unit: state.unit.symbol, field: .weight)
+                    box("Weight", value: weight.formatted(.number.precision(.fractionLength(0...1))), unit: state.unit.symbol,
+                    field: .weight, isNeeded: needed.contains(.weight))
                         .digitalCrownRotation($weight, from: 0, through: state.unit == .kg ? 500 : 1100,
                                               by: step, sensitivity: .low, isContinuous: false, isHapticFeedbackEnabled: true)
                 }
-                box("Reps", value: "\(Int(reps))", unit: "reps", field: .reps)
+                box("Reps", value: "\(Int(reps))", unit: "reps", field: .reps, isNeeded: needed.contains(.reps))
                     .digitalCrownRotation($reps, from: 1, through: 100, by: 1, sensitivity: .low,
                                           isContinuous: false, isHapticFeedbackEnabled: true)
             }
@@ -148,19 +195,27 @@ struct WatchEditSetView: View {
                 .fixedSize(horizontal: false, vertical: true)
             Button {
                 let kg = state.tracksWeight ? WeightFormatter.kilograms(from: weight, in: state.unit) : nil
-                connector.send(.logSet(weightKg: kg, reps: max(1, Int(reps))))
+                connector.send(.logSet(weightKg: kg, reps: max(1, Int(reps)), voice: voice != nil))
                 WKInterfaceDevice.current().play(.success)
                 dismiss()
             } label: {
                 Label("Save set", systemImage: "checkmark").frame(maxWidth: .infinity)
             }
             .tint(Palette.accent)
+            .disabled(!needed.isEmpty)
         }
         .onAppear {
-            weight = state.weightKg.map { WeightFormatter.displayValue(kg: $0, in: state.unit) } ?? 0
-            reps = Double(state.reps ?? 8)
-            focus = state.tracksWeight ? .weight : .reps
+            let kg = voice?.weightKg ?? state.weightKg
+            weight = kg.map { WeightFormatter.displayValue(kg: $0, in: state.unit) } ?? 0
+            reps = Double(voice?.reps ?? state.reps ?? 8)
+            needed = voice?.missing ?? []
+            // Point the Crown at whatever dictation missed.
+            if needed.contains(.weight) && state.tracksWeight { focus = .weight }
+            else if needed.contains(.reps) { focus = .reps }
+            else { focus = state.tracksWeight ? .weight : .reps }
         }
+        .onChange(of: weight) { needed.remove(.weight) }
+        .onChange(of: reps) { needed.remove(.reps) }
         // Exercise and set go in the navigation bar, beside the back button.
         .navigationTitle(state.setNumber.map { "Set \($0)" } ?? "Set")
         .accessibilityElement(children: .contain)
@@ -169,11 +224,20 @@ struct WatchEditSetView: View {
 
     private var step: Double { WeightFormatter.step(for: state.unit) }
 
-    private func box(_ label: String, value: String, unit: String, field: Field) -> some View {
+    private func box(_ label: String, value: String, unit: String, field: Field, isNeeded: Bool) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(label).font(.cadLabel).foregroundStyle(Palette.textSecondary)
-            Text(value).font(.system(size: 26, weight: .bold)).monospacedDigit()
-            Text(unit).font(.cadLabel).foregroundStyle(Palette.textSecondary)
+            Text(isNeeded ? "?" : value)
+                .font(.system(size: 26, weight: .bold))
+                .monospacedDigit()
+                .foregroundStyle(isNeeded ? Palette.warning : Palette.text)
+            if isNeeded {
+                Label("Needed", systemImage: "exclamationmark.triangle")
+                    .font(Font.cadLabel.weight(.semibold))
+                    .foregroundStyle(Palette.warning)
+            } else {
+                Text(unit).font(.cadLabel).foregroundStyle(Palette.textSecondary)
+            }
         }
         .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -184,7 +248,7 @@ struct WatchEditSetView: View {
         .focused($focus, equals: field)
         .onTapGesture { focus = field }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(label) \(value) \(unit)")
+        .accessibilityLabel(isNeeded ? "\(label), needed" : "\(label) \(value) \(unit)")
         .accessibilityHint("Turn the Digital Crown to change it")
     }
 }

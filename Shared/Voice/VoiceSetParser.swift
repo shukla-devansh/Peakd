@@ -1,4 +1,4 @@
-//  VoiceSetParser.swift
+//  VoiceSetParser.swift (Shared: the iPhone Voice sheet and Watch dictation both use it)
 //  Turns a transcript into weight and reps. Deterministic: no model, no guessing beyond the rules
 //  below, and nothing is saved from here (the Voice sheet asks the user to confirm).
 //

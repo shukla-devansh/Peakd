@@ -24,6 +24,8 @@ struct WatchWorkoutState: Codable, Equatable, Sendable {
     var restTotalSeconds: Int?
     /// "Next: set 4 · 42.5 kg × 10"
     var nextText: String?
+    /// Profile → Voice set logging: shows the Watch's mic button.
+    var voiceLogging = true
 
     static let inactive = WatchWorkoutState(isActive: false)
 
@@ -45,7 +47,8 @@ struct WatchWorkoutState: Codable, Equatable, Sendable {
 
 enum WatchCommand: Codable, Equatable, Sendable {
     /// Logs the current set with these values (from the Watch's edit screen).
-    case logSet(weightKg: Double?, reps: Int)
+    /// `voice`: the values came from Watch dictation (the set is logged with source voice).
+    case logSet(weightKg: Double?, reps: Int, voice: Bool = false)
     case skipRest
     case adjustRest(seconds: Int)
     /// Live samples from the Watch's workout session.

@@ -58,6 +58,7 @@ final class AppState {
         let unit = profile?.unit ?? .kg
         var state = WatchWorkoutState(isActive: true, workoutName: session.workout.displayName, startedAt: session.workout.start)
         state.unit = unit
+        state.voiceLogging = profile?.voiceLogging ?? true
         state.weightStepKg = WeightFormatter.kilograms(from: WeightFormatter.step(for: unit), in: unit)
         if let entry = session.currentEntry, !entry.isGone {
             let sets = entry.orderedSets
@@ -86,13 +87,13 @@ final class AppState {
     /// A set logged or a rest change on the Watch.
     private func handle(_ command: WatchCommand) {
         switch command {
-        case .logSet(let weightKg, let reps):
+        case .logSet(let weightKg, let reps, let voice):
             guard let session, let entry = session.currentEntry, !entry.isGone else { return }
             if session.activeSet(in: entry) == nil { session.addSet(to: entry) }
             guard let set = session.activeSet(in: entry) else { return }
             if (entry.exercise?.trackingType ?? .weightReps) == .weightReps { set.weightKg = weightKg }
             set.reps = reps
-            guard session.toggleComplete(set, in: entry, source: .watch) else { return }
+            guard session.toggleComplete(set, in: entry, source: voice ? .voice : .watch) else { return }
             let profile = (try? session.workout.modelContext?.fetch(FetchDescriptor<UserProfile>()))?.first { !$0.isGone }
             didComplete(set, in: entry, session: session, profile: profile, unit: profile?.unit ?? .kg)
         case .skipRest:

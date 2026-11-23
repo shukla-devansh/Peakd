@@ -86,10 +86,12 @@ struct CoachSnapshot {
     var plan: SessionPlan?
     var digests: [WorkoutDigest]
 
-    init(profile: UserProfile?, routines: [Routine], workouts: [Workout], lighten: Bool = false, now: Date = .now) {
+    init(profile: UserProfile?, routines: [Routine], workouts: [Workout], lighten: Bool = false,
+         restingHeartRate: [HeartRateSample] = [], now: Date = .now) {
         let digests = TrainingHistory.digests(from: workouts)
         self.digests = digests
-        let fatigue = FatigueEngine.report(workouts: digests, plannedDaysPerWeek: profile?.daysPerWeek ?? 4, now: now)
+        let fatigue = FatigueEngine.report(workouts: digests, plannedDaysPerWeek: profile?.daysPerWeek ?? 4,
+                                           restingHeartRate: restingHeartRate, now: now)
         self.fatigue = fatigue
         let range = StarterPlan.repRange(for: profile?.goal ?? .strength)
         plan = Planner.plan(

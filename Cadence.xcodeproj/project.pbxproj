@@ -71,6 +71,7 @@
 		CAD00000000000000000003A = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CadenceWidgets-Info.plist"; sourceTree = "<group>"; };
 		CAD00000000000000000003B = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CadenceWidgets.entitlements; sourceTree = "<group>"; };
 		CAD00000000000000000003C = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
+		CAD00000000000000000003F = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CadenceWatch.entitlements; sourceTree = "<group>"; };
 		CAD00000000000000000003E = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Branding.xcconfig; sourceTree = "<group>"; };
 		CAD00000000000000000003D = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Cadence-Personal.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -159,6 +160,7 @@
 				CAD00000000000000000003C,
 				CAD00000000000000000003D,
 				CAD00000000000000000003E,
+				CAD00000000000000000003F,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -546,6 +548,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/CadenceWatch.entitlements;
 				INFOPLIST_FILE = "Config/CadenceWatch-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "$(APP_DISPLAY_NAME) reads your heart rate during a workout.";
@@ -577,6 +580,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/CadenceWatch.entitlements;
 				INFOPLIST_FILE = "Config/CadenceWatch-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "$(APP_DISPLAY_NAME) reads your heart rate during a workout.";

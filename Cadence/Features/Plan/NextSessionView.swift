@@ -22,7 +22,7 @@ struct NextSessionView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var coach: CoachSnapshot {
-        CoachSnapshot(profile: profile, routines: routines, workouts: workouts, lighten: lighten)
+        CoachSnapshot(profile: profile, routines: routines, workouts: workouts, lighten: lighten, restingHeartRate: appState.restingHeartRate)
     }
     private var plan: SessionPlan? { coach.plan }
 

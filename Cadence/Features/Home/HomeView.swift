@@ -30,7 +30,7 @@ struct HomeView: View {
                         }
                         .transition(.opacity)
                     }
-                    let coach = CoachSnapshot(profile: profile, routines: routines, workouts: finished)
+                    let coach = CoachSnapshot(profile: profile, routines: routines, workouts: finished, restingHeartRate: appState.restingHeartRate)
                     if !liveFinished.isEmpty, let plan = coach.plan, let profile {
                         let facts = profile.aiSuggestions
                             ? PlanFacts.make(plan: plan, fatigue: coach.fatigue, digests: coach.digests, unit: profile.unit)

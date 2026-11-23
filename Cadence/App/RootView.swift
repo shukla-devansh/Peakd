@@ -43,9 +43,15 @@ struct RootView: View {
                 WorkoutFlowView()
                     .environment(appState)
             }
-            .task { appState.resumeUnfinishedWorkout(in: context) }
+            .task {
+                appState.resumeUnfinishedWorkout(in: context)
+                await appState.refreshHealth()
+            }
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { appState.endStaleWorkout() }
+                if phase == .active {
+                    appState.endStaleWorkout()
+                    Task { await appState.refreshHealth() }
+                }
             }
     }
 

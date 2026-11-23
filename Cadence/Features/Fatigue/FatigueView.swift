@@ -7,6 +7,7 @@ import SwiftData
 import SwiftUI
 
 struct FatigueView: View {
+    @Environment(AppState.self) private var appState
     @Query private var profiles: [UserProfile]
     @Query(sort: \Routine.createdAt) private var routines: [Routine]
     @Query(filter: #Predicate<Workout> { $0.end != nil }) private var workouts: [Workout]
@@ -15,7 +16,7 @@ struct FatigueView: View {
     private var profile: UserProfile? { profiles.first { !$0.isGone } }
 
     var body: some View {
-        let coach = CoachSnapshot(profile: profile, routines: routines, workouts: workouts)
+        let coach = CoachSnapshot(profile: profile, routines: routines, workouts: workouts, restingHeartRate: appState.restingHeartRate)
         let history = FatigueEngine.history(workouts: coach.digests, plannedDaysPerWeek: profile?.daysPerWeek ?? 4)
 
         ScrollView {

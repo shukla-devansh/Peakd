@@ -126,11 +126,20 @@ struct ActiveWorkoutView: View {
                     .foregroundStyle(Palette.text)
                 TimelineView(.periodic(from: .now, by: 1)) { context in
                     let elapsed = context.date.timeIntervalSince(session.workout.start)
-                    Text(DurationFormat.clock(elapsed))
-                        .font(.cadFootnote)
-                        .monospacedDigit()
-                        .foregroundStyle(Palette.textSecondary)
-                        .accessibilityLabel("Elapsed \(DurationFormat.spoken(elapsed))")
+                    HStack(spacing: Space.xs) {
+                        Text(DurationFormat.clock(elapsed))
+                            .accessibilityLabel("Elapsed \(DurationFormat.spoken(elapsed))")
+                        // Live heart rate from the Apple Watch, while it's fresh.
+                        if let bpm = appState.watch.currentHeartRate(at: context.date) {
+                            Label("\(Int(bpm.rounded()))", systemImage: "heart.fill")
+                                .labelStyle(.titleAndIcon)
+                                .foregroundStyle(Palette.danger)
+                                .accessibilityLabel("Heart rate \(Int(bpm.rounded())) beats per minute")
+                        }
+                    }
+                    .font(.cadFootnote)
+                    .monospacedDigit()
+                    .foregroundStyle(Palette.textSecondary)
                 }
             }
             .accessibilityElement(children: .combine)

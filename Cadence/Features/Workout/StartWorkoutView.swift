@@ -30,7 +30,7 @@ struct StartWorkoutView: View {
                     .buttonStyle(.cadPrimary)
 
                     if let profile = profiles.first(where: { !$0.isGone }), profile.aiSuggestions, !finished.isEmpty,
-                       let plan = CoachSnapshot(profile: profile, routines: routines, workouts: finished).plan {
+                       let plan = CoachSnapshot(profile: profile, routines: routines, workouts: finished, restingHeartRate: appState.restingHeartRate).plan {
                         NavigationLink(value: HomeRoute.nextSession(lighten: false)) {
                             SuggestedRoutineRow(title: "Suggested: \(plan.routineName)",
                                                 subtitle: plan.basis.prefix(1).uppercased() + plan.basis.dropFirst())

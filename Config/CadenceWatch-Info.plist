@@ -5,5 +5,10 @@
 	<!-- The Watch keeps its own store; it syncs with the phone over WatchConnectivity, not the App Group. -->
 	<key>WKApplication</key>
 	<true/>
+	<!-- Keeps the HealthKit workout session (live heart rate) running with the screen off. -->
+	<key>WKBackgroundModes</key>
+	<array>
+		<string>workout-processing</string>
+	</array>
 </dict>
 </plist>

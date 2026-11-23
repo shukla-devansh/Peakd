@@ -13,7 +13,7 @@ Where the project stands, how to pick it up on another Mac, and what is left to 
 3. Clone the repo and open `Cadence.xcodeproj`.
 4. For your iPhone, create `Config/Local.xcconfig` from `Config/Local.xcconfig.example`
    (team ID, unique bundle prefix, personal entitlements on a free Apple ID). See the README.
-5. Run the tests (⌘U). All 161 should pass.
+5. Run the tests (⌘U). All 167 should pass.
 
 Simulator data and the iPhone's data stay on those devices; nothing syncs (there's no account yet).
 
@@ -29,8 +29,8 @@ Simulator data and the iPhone's data stay on those devices; nothing syncs (there
 | 6 | Voice set logging | Done |
 | 7 | On-device AI wording with rule-based fallback | Done |
 | 8 | Progress, exercise detail, records, CSV, share cards, training calendar, body map | Done |
-| 9 | HealthKit + Apple Watch | **Next** |
-| 10 | Polish | To do |
+| 9 | HealthKit + Apple Watch | Done |
+| 10 | Polish | **Next** |
 | 11 | Sign-in | To do, last |
 
 Also done: per-developer signing (`Config/Local.xcconfig`), one-setting app name
@@ -49,43 +49,26 @@ These can't be tested in the simulator:
 - **Rest timer on the Lock Screen:** Live Activity, Dynamic Island, and the alert when rest ends.
 - **Share:** share a Story to Instagram, put a Sticker on a photo.
 
-## 3. Phase 9: HealthKit + Apple Watch
+## 3. Phase 9: HealthKit + Apple Watch (done)
 
-Goal (from the project guide): heart rate and energy in summaries, workouts saved to Apple Health,
-resting heart rate in the fatigue score, and a 3-screen Watch app that logs sets and shows rest.
+- **Health:** finished workouts are saved as Traditional Strength Training; the Summary gets
+  average and peak heart rate and active energy (from Health, or the Watch's live samples);
+  resting heart rate (last 28 days) feeds the fatigue score.
+- **Watch app** (`CadenceWatch/`): Live workout (timer, heart rate, current set, Log set),
+  Edit set (Digital Crown for weight and reps, Save set) and Rest (ring, next set, +15, Skip,
+  haptic tap at zero). It mirrors the iPhone's workout; the iPhone stays in charge.
+- **Sync** (`Shared/Watch/WatchMessages.swift`, `WatchSyncService`, `WatchConnector`): the iPhone
+  sends the workout state as application context; the Watch sends logged sets (source `watch`),
+  rest controls and heart rate. The Watch runs an `HKWorkoutSession` for live heart rate and
+  discards its own workout, so only the iPhone's is saved to Health.
+- **Live heart rate** shows next to the timer on the active workout.
 
-Already in place:
+Still to check on real hardware: live heart rate and calories (the simulator has none), the
+haptic at the end of rest, and the workout appearing in the Health app after Finish.
 
-- `Cadence/Services/HealthService.swift`: authorization, with the read types (heart rate,
-  resting heart rate, active energy) and share type (workouts).
-- `Cadence/Services/WatchSyncService.swift`: `WCSession` activation and paired/installed state.
-- `CadenceWatch/`: an empty Watch app target.
-- `Workout` already has `avgHR`, `maxHR` and `activeEnergy`; the Summary shows heart-rate tiles when
-  they're set.
-- `FatigueEngine.report(..., restingHeartRate:)` already scores resting heart rate against a
-  14-day baseline. It just isn't fed data yet.
-
-To build:
-
-1. **Save workouts to Health.** On Finish, build an `HKWorkout` (strength training) with
-   `HKWorkoutBuilder` from the workout's start and end, and save it.
-2. **Heart rate and energy for summaries.** Query heart-rate samples between start and end (average,
-   max) and active energy (sum); store them on `Workout`; the Summary tiles appear by themselves.
-3. **Resting heart rate.** Query the last 28 days of resting heart rate and pass it to
-   `FatigueEngine.report` (see `CoachSnapshot` in `Cadence/Engine/TrainingHistory.swift`).
-4. **Watch app** (design: `design/screens/Watch.dc.html`, 3 screens): current exercise and set
-   with weight/reps and a Done button; the rest countdown; live heart rate. Run an
-   `HKWorkoutSession` on the Watch for live heart rate.
-5. **Sync with `WatchConnectivity`.** iPhone → Watch: current exercise, next set, rest end time.
-   Watch → iPhone: a completed set (logged with source `watch`), skip rest. Use
-   `sendMessage` when reachable and `transferUserInfo` otherwise.
-6. **Live heart rate on Active and Summary** from the Watch.
-7. Give the Watch target the HealthKit capability (an entitlements file like
-   `Config/Cadence.entitlements`, referenced from the target's build settings).
-
-Testing notes: the simulator has no real heart rate, so add sample data in the simulator's Health
-app or test on a real Watch. Pair a Watch simulator with the iPhone simulator in Xcode → Window →
-Devices and Simulators. HealthKit works on a free Apple ID.
+To test in the simulator: pair an Apple Watch Series 11 (46 mm) simulator with the iPhone
+simulator (Xcode → Window → Devices and Simulators), run the iPhone app, start a workout, and
+open the Watch app.
 
 ## 4. Phase 10: Polish
 

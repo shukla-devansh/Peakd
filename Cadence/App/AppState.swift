@@ -18,6 +18,12 @@ final class AppState {
     let rest: RestTimerService
     /// Foundation Models wording for the planner's text (falls back to the templates).
     let ai = AIPlanner()
+    /// Saving workouts to Health and reading heart rate / energy.
+    let health = HealthService()
+    /// Last 28 days of resting heart rate, for the fatigue score (empty without Health).
+    private(set) var restingHeartRate: [HeartRateSample] = []
+
+    var watch: WatchSyncService { permissions.watch }
     /// Full-screen RestTimer from the Active rest bar.
     var isRestTimerPresented = false
 
@@ -26,6 +32,107 @@ final class AppState {
         self.notifications = notifications
         self.rest = RestTimerService(effects: notifications)
         notifications.onOpenWorkout = { [weak self] in self?.openRunningWorkout() }
+        permissions.watch.onCommand = { [weak self] in self?.handle($0) }
+        permissions.watch.activate()
+        observeForWatch()
+    }
+
+    // MARK: Apple Watch
+
+    /// Pushes the workout state to the Watch now and again whenever anything it reads changes
+    /// (the session, its sets, the rest timer).
+    private func observeForWatch() {
+        let state = withObservationTracking {
+            // Read the connection too, so the state is resent once the Watch connects.
+            _ = (watch.isActivated, watch.isConnected)
+            return watchState()
+        } onChange: {
+            Task { @MainActor [weak self] in self?.observeForWatch() }
+        }
+        watch.push(state)
+    }
+
+    func watchState() -> WatchWorkoutState {
+        guard let session, !session.workout.isGone else { return .inactive }
+        let profile = (try? session.workout.modelContext?.fetch(FetchDescriptor<UserProfile>()))?.first { !$0.isGone }
+        let unit = profile?.unit ?? .kg
+        var state = WatchWorkoutState(isActive: true, workoutName: session.workout.displayName, startedAt: session.workout.start)
+        state.unit = unit
+        state.weightStepKg = WeightFormatter.kilograms(from: WeightFormatter.step(for: unit), in: unit)
+        if let entry = session.currentEntry, !entry.isGone {
+            let sets = entry.orderedSets
+            let active = session.activeSet(in: entry)
+            let index = active?.index ?? ((sets.map(\.index).max() ?? 0) + 1)
+            let above = sets.last { $0.index < index && $0.isCompleted }
+            let previous = session.previousSet(for: entry, index: index)
+            state.exerciseName = entry.exerciseName
+            state.setNumber = index
+            state.totalSets = max(sets.count, index)
+            state.tracksWeight = (entry.exercise?.trackingType ?? .weightReps) == .weightReps
+            state.weightKg = active?.weightKg ?? above?.weightKg ?? previous?.weightKg
+            state.reps = active?.reps ?? above?.reps ?? previous?.reps ?? entry.repRange?.lowerBound
+        }
+        if let end = rest.endDate {
+            state.restEnd = end
+            state.restTotalSeconds = rest.totalSeconds
+            if let info = rest.info {
+                let parts = [info.nextSet.map { "set \($0)" }, info.upNextValue].compactMap { $0 }
+                state.nextText = parts.isEmpty ? nil : "Next: " + parts.joined(separator: " · ")
+            }
+        }
+        return state
+    }
+
+    /// A set logged or a rest change on the Watch.
+    private func handle(_ command: WatchCommand) {
+        switch command {
+        case .logSet(let weightKg, let reps):
+            guard let session, let entry = session.currentEntry, !entry.isGone else { return }
+            if session.activeSet(in: entry) == nil { session.addSet(to: entry) }
+            guard let set = session.activeSet(in: entry) else { return }
+            if (entry.exercise?.trackingType ?? .weightReps) == .weightReps { set.weightKg = weightKg }
+            set.reps = reps
+            guard session.toggleComplete(set, in: entry, source: .watch) else { return }
+            let profile = (try? session.workout.modelContext?.fetch(FetchDescriptor<UserProfile>()))?.first { !$0.isGone }
+            didComplete(set, in: entry, session: session, profile: profile, unit: profile?.unit ?? .kg)
+        case .skipRest:
+            rest.skip()
+        case .adjustRest(let seconds):
+            rest.adjust(by: seconds)
+        case .heartRate, .activeEnergy:
+            break   // kept by WatchSyncService
+        }
+    }
+
+    // MARK: Apple Health
+
+    /// Resting heart rate for the fatigue score. Called at launch and when the app comes back.
+    func refreshHealth() async {
+        restingHeartRate = await health.restingHeartRate()
+    }
+
+    /// After a workout is saved: heart rate and energy from Health (or the Watch's live samples),
+    /// then the workout itself is saved to Health.
+    private func recordHealth(for workout: Workout) {
+        let start = workout.start
+        let end = workout.end ?? .now
+        let liveHeartRate = HeartRateStats.summary(watch.workoutHeartRates)
+        let liveEnergy = watch.liveEnergyKcal
+        watch.resetLiveData()
+        Task { @MainActor in
+            let heartRate = await health.heartRate(from: start, to: end) ?? liveHeartRate
+            let healthEnergy = await health.activeEnergy(from: start, to: end)
+            if !workout.isGone {
+                if let heartRate {
+                    workout.avgHR = heartRate.average
+                    workout.maxHR = heartRate.max
+                }
+                if let energy = healthEnergy ?? liveEnergy { workout.activeEnergy = energy }
+                try? workout.modelContext?.save()
+            }
+            // Only add the Watch's energy when Health doesn't already have it, so it isn't counted twice.
+            try? await health.saveWorkout(start: start, end: end, activeEnergyKcal: healthEnergy == nil ? liveEnergy : nil)
+        }
     }
 
     /// Notification tap or Live Activity link.
@@ -46,6 +153,7 @@ final class AppState {
     func startWorkout(routine: Routine?, in context: ModelContext) {
         if session == nil {
             session = WorkoutSession.start(routine: routine, in: context)
+            watch.resetLiveData()
         }
         finishedWorkout = nil
         isWorkoutPresented = true
@@ -55,6 +163,7 @@ final class AppState {
     func startWorkout(plan: SessionPlan, in context: ModelContext) {
         if session == nil {
             session = WorkoutSession.start(plan: plan, in: context)
+            watch.resetLiveData()
         }
         finishedWorkout = nil
         isWorkoutPresented = true
@@ -63,6 +172,7 @@ final class AppState {
     func repeatWorkout(_ past: Workout, in context: ModelContext) {
         if session == nil {
             session = WorkoutSession.repeating(past, in: context)
+            watch.resetLiveData()
         }
         finishedWorkout = nil
         isWorkoutPresented = true
@@ -74,6 +184,7 @@ final class AppState {
         isRestTimerPresented = false
         finishedWorkout = session.finish()
         self.session = nil
+        if let finishedWorkout { recordHealth(for: finishedWorkout) }
         if finishedWorkout == nil { isWorkoutPresented = false }
     }
 
@@ -121,6 +232,7 @@ final class AppState {
         isRestTimerPresented = false
         let saved = session.finish(at: last)
         self.session = nil
+        if let saved { recordHealth(for: saved) }
         isWorkoutPresented = false
         finishedWorkout = nil
         autoEnded = AutoEndedWorkout(name: name, startedAt: start, savedAt: saved == nil ? nil : last, workout: saved)

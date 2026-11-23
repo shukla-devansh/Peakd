@@ -70,7 +70,7 @@ enum DataStore {
 /// CSV handed to the share sheet. Written to a temporary file only when the user shares it.
 struct CSVExportFile: Transferable {
     let text: String
-    var filename = "Cadence export.csv"
+    var filename = "\(AppInfo.name) export.csv"
 
     static var transferRepresentation: some TransferRepresentation {
         FileRepresentation(exportedContentType: .commaSeparatedText) { file in

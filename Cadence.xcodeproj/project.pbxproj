@@ -71,6 +71,7 @@
 		CAD00000000000000000003A = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CadenceWidgets-Info.plist"; sourceTree = "<group>"; };
 		CAD00000000000000000003B = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CadenceWidgets.entitlements; sourceTree = "<group>"; };
 		CAD00000000000000000003C = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
+		CAD00000000000000000003E = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Branding.xcconfig; sourceTree = "<group>"; };
 		CAD00000000000000000003D = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Cadence-Personal.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -157,6 +158,7 @@
 				CAD00000000000000000003B,
 				CAD00000000000000000003C,
 				CAD00000000000000000003D,
+				CAD00000000000000000003E,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -468,12 +470,12 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/Cadence-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Cadence;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Cadence reads heart rate and active energy to show them in your workout summaries.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Cadence saves your finished workouts to Apple Health.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "$(APP_DISPLAY_NAME) reads heart rate and active energy to show them in your workout summaries.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "$(APP_DISPLAY_NAME) saves your finished workouts to Apple Health.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Log a set by saying “45 kilos for 8 reps”.";
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Cadence turns what you say into weight and reps, on this iPhone.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "$(APP_DISPLAY_NAME) turns what you say into weight and reps, on this iPhone.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -507,12 +509,12 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/Cadence-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Cadence;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Cadence reads heart rate and active energy to show them in your workout summaries.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Cadence saves your finished workouts to Apple Health.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "$(APP_DISPLAY_NAME) reads heart rate and active energy to show them in your workout summaries.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "$(APP_DISPLAY_NAME) saves your finished workouts to Apple Health.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Log a set by saying “45 kilos for 8 reps”.";
-				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Cadence turns what you say into weight and reps, on this iPhone.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "$(APP_DISPLAY_NAME) turns what you say into weight and reps, on this iPhone.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -545,9 +547,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/CadenceWatch-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Cadence;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Cadence reads your heart rate during a workout.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Cadence saves your workouts to Apple Health.";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "$(APP_DISPLAY_NAME) reads your heart rate during a workout.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "$(APP_DISPLAY_NAME) saves your workouts to Apple Health.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "$(BUNDLE_ID_PREFIX).cadence";
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
@@ -576,9 +578,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/CadenceWatch-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Cadence;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Cadence reads your heart rate during a workout.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Cadence saves your workouts to Apple Health.";
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "$(APP_DISPLAY_NAME) reads your heart rate during a workout.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "$(APP_DISPLAY_NAME) saves your workouts to Apple Health.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "$(BUNDLE_ID_PREFIX).cadence";
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = NO;
@@ -606,7 +608,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/CadenceWidgets-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Cadence;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -632,7 +634,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Config/CadenceWidgets-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Cadence;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(APP_DISPLAY_NAME)";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

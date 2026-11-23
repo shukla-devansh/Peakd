@@ -19,7 +19,7 @@ struct WatchRootView: View {
                 .font(.title2)
                 .foregroundStyle(Palette.accentText)
                 .accessibilityHidden(true)
-            Text("Cadence")
+            Text(AppInfo.name)
                 .font(.cadHeadline)
                 .foregroundStyle(Palette.text)
             Text("Start a workout on your iPhone.")

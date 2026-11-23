@@ -1,3 +1,5 @@
+#include "Branding.xcconfig"
+
 // Signing defaults for every target.
 // To run on your own iPhone: copy Local.xcconfig.example to Local.xcconfig (git-ignored)
 // and fill in your Team ID and a bundle prefix nobody else uses.

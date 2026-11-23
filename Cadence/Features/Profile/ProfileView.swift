@@ -128,7 +128,7 @@ private struct ProfileForm: View {
             Section {
                 HStack {
                     ShareLink(item: CSVExportFile(text: DataStore.csv(for: workouts)),
-                              preview: SharePreview("Cadence export.csv")) {
+                              preview: SharePreview("\(AppInfo.name) export.csv")) {
                         Text("Export my data")
                             .font(Font.cadSubhead.weight(.medium))
                             .foregroundStyle(Palette.accentText)

@@ -15,6 +15,7 @@ struct WorkoutSummaryView: View {
     private var finished: [Workout]
 
     private var unit: WeightUnit { profiles.first(where: { !$0.isGone })?.unit ?? .kg }
+    @State private var shareData: WorkoutShareData?
 
     var body: some View {
         if workout.isGone {
@@ -27,14 +28,28 @@ struct WorkoutSummaryView: View {
     private var content: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Space.sm) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("\(workout.displayName) · \(workout.start.formatted(.dateTime.weekday(.wide).day().month(.wide)))")
-                        .font(.cadFootnote)
-                        .foregroundStyle(Palette.textSecondary)
-                    Text(isJustFinished ? "Workout complete" : workout.displayName)
-                        .font(.cadScreenTitle)
-                        .foregroundStyle(Palette.text)
-                        .accessibilityAddTraits(.isHeader)
+                HStack(alignment: .top, spacing: Space.sm) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("\(workout.displayName) · \(workout.start.formatted(.dateTime.weekday(.wide).day().month(.wide)))")
+                            .font(.cadFootnote)
+                            .foregroundStyle(Palette.textSecondary)
+                        Text(isJustFinished ? "Workout complete" : workout.displayName)
+                            .font(.cadScreenTitle)
+                            .foregroundStyle(Palette.text)
+                            .accessibilityAddTraits(.isHeader)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Button {
+                        shareData = WorkoutShareData.make(workout, unit: unit)
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(Palette.text)
+                            .frame(width: Size.minTouch, height: Size.minTouch)
+                            .background(Palette.elevated, in: Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Share workout")
                 }
 
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: Space.xs), count: 3), spacing: Space.xs) {
@@ -58,6 +73,9 @@ struct WorkoutSummaryView: View {
         }
         .cadStatusBarBackground()
         .cadScreenBackground()
+        .sheet(isPresented: Binding(get: { shareData != nil }, set: { if !$0 { shareData = nil } })) {
+            if let shareData { WorkoutShareSheet(data: shareData) }
+        }
         .toolbar(isJustFinished ? .hidden : .automatic, for: .navigationBar)
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom, spacing: 0) {

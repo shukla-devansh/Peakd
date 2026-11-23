@@ -1,5 +1,7 @@
 # Next steps
 
+The app is called **Peakd**; the code name in Xcode is Cadence.
+
 Where the project stands, how to pick it up on another Mac, and what is left to build.
 
 ## 1. Set up a new Mac
@@ -108,7 +110,7 @@ team has a paid account.
 
 ## 6. Handy facts
 
-- App name: `APP_DISPLAY_NAME` in `Config/Branding.xcconfig`.
+- App name: `APP_DISPLAY_NAME` in `Config/Branding.xcconfig` (now `Peakd`).
 - Your signing: `Config/Local.xcconfig` (never committed).
 - A free Apple ID allows 3 sideloaded apps on a phone, and installs expire after 7 days.
 - The AI wording needs Apple Intelligence. The simulator uses the Mac's, so turn it on in the Mac's

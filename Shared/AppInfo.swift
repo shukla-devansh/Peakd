@@ -6,5 +6,5 @@ import Foundation
 
 enum AppInfo {
     static let name: String =
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? "Cadence"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ?? "Peakd"
 }

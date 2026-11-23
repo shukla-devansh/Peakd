@@ -1,4 +1,4 @@
 // The app's name as people see it: Home Screen, permission prompts, share cards, exports.
 // Change it here only. Internal names (targets, bundle IDs, the data store) stay "Cadence"
 // so existing data keeps working.
-APP_DISPLAY_NAME = Cadence
+APP_DISPLAY_NAME = Peakd

@@ -1,10 +1,11 @@
-# Cadence
+# Peakd
 
 A strength-training tracker for iPhone and Apple Watch. Log sets by hand or by voice, rest with a
 Live Activity timer, and get the next session planned from your own history: progressive overload,
 a fatigue estimate, and progress charts.
 
-College project for CSE 4456 by Saksham Sharma and Devansh Shukla.
+College project for CSE 4456 by Saksham Sharma and Devansh Shukla. The code name is **Cadence**:
+that's what the Xcode project, targets and folders are called; the app people see is Peakd.
 
 ## Features
 
@@ -63,8 +64,8 @@ Free Apple IDs can have only **3 sideloaded apps** on a phone at once, and the i
 ## Renaming the app
 
 The name people see (Home Screen, permission prompts, share cards, exports, Watch) is one setting:
-`APP_DISPLAY_NAME` in `Config/Branding.xcconfig`. Internal names stay "Cadence" so saved data keeps
-working.
+`APP_DISPLAY_NAME` in `Config/Branding.xcconfig` (currently `Peakd`). Internal names stay "Cadence"
+so saved data keeps working.
 
 ## Project layout
 

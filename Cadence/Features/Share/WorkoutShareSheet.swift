@@ -26,7 +26,7 @@ struct WorkoutShareSheet: View {
                     .tint(Palette.accent)
                     .frame(minHeight: Size.minTouch)
                 if let image {
-                    ShareLink(item: image, preview: SharePreview(data.title, image: Image(decorative: image.cgImage, scale: 3))) {
+                    ShareLink(item: image, preview: SharePreview(data.title, image: Image(decorative: image.previewImage, scale: 3))) {
                         Label("Share", systemImage: "square.and.arrow.up")
                     }
                     .buttonStyle(.cadPrimary)
@@ -53,27 +53,24 @@ struct WorkoutShareSheet: View {
         .preferredColorScheme(.dark)
     }
 
-    /// The card scaled to fit; the sticker sits on a photo-like gradient so its transparency shows.
+    /// The card scaled to fit; the sticker sits on a checkerboard so its transparency shows.
     private var preview: some View {
         GeometryReader { geo in
             let size = style.size
             let scale = min(geo.size.width / size.width, geo.size.height / size.height, 1)
             ZStack {
                 if style == .sticker {
-                    LinearGradient(colors: [Color(white: 0.35), Color(white: 0.12)], startPoint: .top, endPoint: .bottom)
-                        .frame(width: size.width * scale, height: size.width * scale * 1.25)
-                        .overlay(alignment: .center) {
-                            Image(systemName: "photo")
-                                .font(.system(size: 40))
-                                .foregroundStyle(.white.opacity(0.25))
-                                .offset(y: -size.width * scale * 0.3)
-                        }
-                        .overlay(alignment: .bottom) {
-                            WorkoutShareCard(data: data, style: style, showsWeights: showsWeights)
-                                .scaleEffect(scale)
-                                .frame(width: size.width * scale, height: size.height * scale)
-                        }
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    VStack(spacing: Space.xs) {
+                        WorkoutShareCard(data: data, style: style, showsWeights: showsWeights)
+                            .scaleEffect(scale)
+                            .frame(width: size.width * scale, height: size.height * scale)
+                            .background(Checkerboard().clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous)))
+                        Text("Transparent background: add it on top of your own photo in Instagram or Photos.")
+                            .font(.cadFootnote)
+                            .foregroundStyle(Palette.textSecondary)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 } else {
                     WorkoutShareCard(data: data, style: style, showsWeights: showsWeights)
                         .clipShape(RoundedRectangle(cornerRadius: 24 / max(scale, 0.01), style: .continuous))
@@ -94,7 +91,16 @@ struct WorkoutShareSheet: View {
         renderer.scale = 3
         renderer.isOpaque = style != .sticker
         guard let cg = renderer.cgImage, let png = Self.png(cg) else { image = nil; return }
-        image = SharedImage(cgImage: cg, data: png, filename: "\(data.title) · \(AppInfo.name).png")
+        // The share sheet's thumbnail is drawn on a light or dark card; give the transparent
+        // sticker a dark backing there so its white text doesn't disappear.
+        var preview = cg
+        if style == .sticker {
+            let backed = ImageRenderer(content: WorkoutShareCard(data: data, style: style, showsWeights: showsWeights)
+                .background(Palette.background))
+            backed.scale = 3
+            preview = backed.cgImage ?? cg
+        }
+        image = SharedImage(cgImage: cg, previewImage: preview, data: png, filename: "\(data.title) · \(AppInfo.name).png")
     }
 
     static func png(_ image: CGImage) -> Data? {
@@ -105,9 +111,30 @@ struct WorkoutShareSheet: View {
     }
 }
 
+/// Grey/white squares: the usual sign for "this part is see-through".
+private struct Checkerboard: View {
+    var square: CGFloat = 10
+
+    var body: some View {
+        Canvas { context, size in
+            context.fill(Path(CGRect(origin: .zero, size: size)), with: .color(Color(white: 0.32)))
+            let cols = Int(size.width / square) + 1, rows = Int(size.height / square) + 1
+            for r in 0..<rows {
+                for c in 0..<cols where (r + c).isMultiple(of: 2) {
+                    context.fill(Path(CGRect(x: CGFloat(c) * square, y: CGFloat(r) * square, width: square, height: square)),
+                                 with: .color(Color(white: 0.22)))
+                }
+            }
+        }
+        .accessibilityHidden(true)
+    }
+}
+
 /// A rendered card, shared as a PNG file so apps keep the name and the transparency.
 struct SharedImage: Transferable, @unchecked Sendable {
     let cgImage: CGImage
+    /// Same image, with a dark backing for the sticker (share sheet thumbnail only).
+    let previewImage: CGImage
     let data: Data
     let filename: String
 

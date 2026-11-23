@@ -328,3 +328,18 @@ struct NextExerciseTests {
                                               availableEquipment: [.barbell], now: now).isEmpty)
     }
 }
+
+@Suite("Abandoned workouts")
+struct StaleWorkoutTests {
+    let start = Date(timeIntervalSince1970: 1_800_000_000)
+
+    @Test func lastActivityIsTheLatestSet() {
+        #expect(WorkoutSession.lastActivity(start: start, lastSet: nil) == start)
+        #expect(WorkoutSession.lastActivity(start: start, lastSet: start.addingTimeInterval(3600)) == start.addingTimeInterval(3600))
+    }
+
+    @Test func staleAfterTwelveHoursWithoutActivity() {
+        #expect(!WorkoutSession.isStale(lastActivity: start, now: start.addingTimeInterval(11.9 * 3600)))
+        #expect(WorkoutSession.isStale(lastActivity: start, now: start.addingTimeInterval(12 * 3600)))
+    }
+}

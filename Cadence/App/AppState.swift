@@ -97,6 +97,44 @@ final class AppState {
         selectedTab = .home
     }
 
+    /// Shown on Home (until dismissed) after a forgotten workout was ended automatically.
+    struct AutoEndedWorkout: Identifiable {
+        let id = UUID()
+        let name: String
+        let startedAt: Date
+        /// When it was saved (the last set); nil when nothing was logged and it was discarded.
+        let savedAt: Date?
+        let workout: Workout?
+    }
+
+    var autoEnded: AutoEndedWorkout?
+
+    /// Ends the running workout if nothing happened for 12 hours: saved at the last set,
+    /// or discarded if no set was ticked. Called at launch and whenever the app comes back.
+    func endStaleWorkout(now: Date = .now) {
+        guard let session, !session.workout.isGone else { return }
+        let last = session.lastActivity
+        guard WorkoutSession.isStale(lastActivity: last, now: now) else { return }
+        let name = session.workout.displayName
+        let start = session.workout.start
+        rest.stop()
+        isRestTimerPresented = false
+        let saved = session.finish(at: last)
+        self.session = nil
+        isWorkoutPresented = false
+        finishedWorkout = nil
+        autoEnded = AutoEndedWorkout(name: name, startedAt: start, savedAt: saved == nil ? nil : last, workout: saved)
+        selectedTab = .home   // where the note is
+    }
+
+    /// "View summary" on the auto-end note.
+    func showAutoEndedSummary() {
+        guard let workout = autoEnded?.workout, !workout.isGone else { autoEnded = nil; return }
+        autoEnded = nil
+        finishedWorkout = workout
+        isWorkoutPresented = true
+    }
+
     /// Picks up a workout left running when the app was killed.
     func resumeUnfinishedWorkout(in context: ModelContext) {
         guard session == nil else { return }
@@ -105,6 +143,7 @@ final class AppState {
         descriptor.fetchLimit = 1
         if let workout = try? context.fetch(descriptor).first {
             session = WorkoutSession(workout: workout, context: context)
+            endStaleWorkout()
         } else {
             rest.stop()   // a rest or Live Activity left over from a workout that no longer exists
         }

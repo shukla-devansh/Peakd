@@ -23,6 +23,8 @@ struct WorkoutDigest: Sendable, Equatable {
     var muscleSets: [MuscleGroup: Int]
 
     var displayName: String { routineName ?? "Workout" }
+    /// For the start of a sentence: "Push day was…", or "Your last workout was…" when untitled.
+    var sentenceName: String { routineName ?? "Your last workout" }
 }
 
 struct HeartRateSample: Sendable, Equatable {

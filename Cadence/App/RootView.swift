@@ -9,6 +9,7 @@ struct RootView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var scenePhase
     @Query private var profiles: [UserProfile]
 
     var body: some View {
@@ -43,6 +44,9 @@ struct RootView: View {
                     .environment(appState)
             }
             .task { appState.resumeUnfinishedWorkout(in: context) }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .active { appState.endStaleWorkout() }
+            }
     }
 
     private var tabView: some View {

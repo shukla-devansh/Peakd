@@ -111,8 +111,8 @@ enum Planner {
             } else {
                 let covered = Self.list(topMuscles(last.muscleSets))
                 sentences.append(covered.isEmpty
-                    ? "\(last.displayName) was your last session, so \(focus) \(verb(focus)) next."
-                    : "\(last.displayName) covered \(covered), so \(focus) \(verb(focus)) next.")
+                    ? "\(last.sentenceName) was your last session, so \(focus) \(verb(focus)) next."
+                    : "\(last.sentenceName) covered \(covered), so \(focus) \(verb(focus)) next.")
             }
         } else {
             sentences.append("Your first \(routine.name) session.")
@@ -123,7 +123,7 @@ enum Planner {
         if let last, last.displayName == routine.name {
             homeReason = "Last done \(relativeDay(last.date, now: now, calendar: calendar)). Weights move where you hit every rep."
         } else if let last {
-            homeReason = "\(last.displayName) was \(relativeDay(last.date, now: now, calendar: calendar)), so \(focus) \(verb(focus)) next."
+            homeReason = "\(last.sentenceName) was \(relativeDay(last.date, now: now, calendar: calendar)), so \(focus) \(verb(focus)) next."
         } else {
             homeReason = "Start here; suggestions get personal after a few sessions."
         }

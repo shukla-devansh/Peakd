@@ -22,6 +22,14 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     header
+                    if let ended = appState.autoEnded {
+                        AutoEndedBanner(ended: ended) {
+                            appState.showAutoEndedSummary()
+                        } onDismiss: {
+                            appState.autoEnded = nil
+                        }
+                        .transition(.opacity)
+                    }
                     let coach = CoachSnapshot(profile: profile, routines: routines, workouts: finished)
                     if !liveFinished.isEmpty, let plan = coach.plan, let profile {
                         let facts = profile.aiSuggestions
@@ -201,6 +209,62 @@ struct StarterPlanCard: View {
         let count = routine.items.count
         let minutes = StarterPlan.estimatedMinutes(for: routine, defaultRest: defaultRest)
         return "\(count) \(count == 1 ? "exercise" : "exercises") · about \(minutes) min"
+    }
+}
+
+/// A workout left open for 12+ hours was ended for the user: say what happened, once.
+struct AutoEndedBanner: View {
+    let ended: AppState.AutoEndedWorkout
+    let onView: () -> Void
+    let onDismiss: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: Space.sm) {
+            Image(systemName: "clock.badge.checkmark")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(Palette.accentText)
+                .frame(width: 28)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: Space.xs) {
+                Text("Workout ended")
+                    .font(.cadHeadline)
+                    .foregroundStyle(Palette.text)
+                Text(Self.message(ended))
+                    .font(.cadFootnote)
+                    .foregroundStyle(Palette.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if ended.workout != nil {
+                    Button("View summary", action: onView)
+                        .font(Font.cadSubhead.weight(.semibold))
+                        .foregroundStyle(Palette.accentText)
+                        .frame(minHeight: Size.minTouch)
+                        .buttonStyle(.plain)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(Palette.textSecondary)
+                    .frame(width: Size.minTouch, height: Size.minTouch)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .padding(.top, -12)
+            .padding(.trailing, -12)
+            .accessibilityLabel("Dismiss")
+        }
+        .cadCallout(padding: 14)
+        .accessibilityElement(children: .contain)
+    }
+
+    /// "Full body A was left open since Thursday 15:14, so it was saved at your last set (15:40)."
+    static func message(_ ended: AppState.AutoEndedWorkout) -> String {
+        let since = ended.startedAt.formatted(.dateTime.weekday(.wide).hour().minute())
+        if let saved = ended.savedAt {
+            return "\(ended.name) was left open since \(since), so it was saved at your last set (\(saved.formatted(date: .omitted, time: .shortened)))."
+        }
+        return "\(ended.name) was left open since \(since) with no sets ticked, so it was discarded."
     }
 }
 

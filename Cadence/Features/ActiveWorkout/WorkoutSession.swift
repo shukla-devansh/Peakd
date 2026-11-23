@@ -281,6 +281,25 @@ final class WorkoutSession {
         save()
     }
 
+    // MARK: Abandoned workouts
+
+    /// A workout with no activity for this long ends itself (the user forgot to tap Finish).
+    nonisolated static let staleAfter: TimeInterval = 12 * 3600
+
+    /// The start, or the last ticked set if later.
+    var lastActivity: Date {
+        let lastSet = entries.flatMap(\.sets).compactMap(\.completedAt).max()
+        return Self.lastActivity(start: workout.start, lastSet: lastSet)
+    }
+
+    nonisolated static func lastActivity(start: Date, lastSet: Date?) -> Date {
+        max(start, lastSet ?? start)
+    }
+
+    nonisolated static func isStale(lastActivity: Date, now: Date = .now) -> Bool {
+        now.timeIntervalSince(lastActivity) >= staleAfter
+    }
+
     // MARK: Helpers
 
     func isFinished(_ entry: WorkoutExercise) -> Bool {

@@ -21,6 +21,7 @@ struct StartWorkoutView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
+                    VStack(alignment: .leading, spacing: 14) {
                     Button {
                         appState.startWorkout(routine: nil, in: context)
                     } label: {
@@ -37,6 +38,9 @@ struct StartWorkoutView: View {
                         }
                         .buttonStyle(.plain)
                     }
+                    }
+                    .accessibilityElement(children: .contain)
+                    .accessibilityLabel("Quick start")
 
                     VStack(alignment: .leading, spacing: Space.xxs) {
                         HStack {

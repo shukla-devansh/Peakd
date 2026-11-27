@@ -53,6 +53,7 @@ struct ExerciseLibraryView: View {
                     let recent = recent
                     if !recent.isEmpty {
                         SectionLabel("Recent").padding(.top, Space.xxs)
+                        VStack(spacing: 6) {
                         ForEach(recent, id: \.exercise.persistentModelID) { item in
                             NavigationLink(value: item.exercise.persistentModelID) {
                                 ListRowCard(title: item.exercise.name, subtitle: item.exercise.subtitle, systemImage: "dumbbell") {
@@ -66,6 +67,9 @@ struct ExerciseLibraryView: View {
                             }
                             .buttonStyle(.plain)
                         }
+                        }
+                        .accessibilityElement(children: .contain)
+                        .accessibilityLabel("Recent exercises")
                     }
                     SectionLabel("A to Z").padding(.top, Space.xxs)
                     if filtered.isEmpty {
@@ -76,12 +80,16 @@ struct ExerciseLibraryView: View {
                             actionTitle: "New exercise"
                         ) { showNew = true }
                     }
-                    ForEach(filtered) { exercise in
-                        NavigationLink(value: exercise.persistentModelID) {
-                            ListRowCard(title: exercise.name, subtitle: exercise.subtitle, systemImage: "dumbbell") { EmptyView() }
+                    LazyVStack(spacing: 6) {
+                        ForEach(filtered) { exercise in
+                            NavigationLink(value: exercise.persistentModelID) {
+                                ListRowCard(title: exercise.name, subtitle: exercise.subtitle, systemImage: "dumbbell") { EmptyView() }
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
+                    .accessibilityElement(children: .contain)
+                    .accessibilityLabel("All exercises")
                 }
                 .padding(.horizontal, Space.screenMargin)
                 .padding(.top, Space.xs)

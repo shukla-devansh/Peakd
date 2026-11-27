@@ -9,7 +9,7 @@ The design is final. Build what the design shows; don't redesign it.
 2. `design/screens/*.dc.html` — the exact visual reference for each screen (HTML with inline styles). Read the markup for spacing, sizes, copy and colours. Ignore the `<script>`/`sc-for` mechanics; the arrays inside `renderVals()` are sample data.
 3. `Shared/DesignSystem/Theme.swift` — design tokens. Use them; never put raw hex values in views.
 4. `docs/synopsis.pdf` — the original academic spec (features §3.1–3.8).
-5. `docs/NEXT_STEPS.md` — current status (phases 1–9 done) and the plan for phase 10 onwards. Start here.
+5. `docs/NEXT_STEPS.md` — current status (phases 1–10 done) and the plan for phase 11 (sign-in). Start here.
 
 ## Stack (decided)
 - Xcode 26.3+ (built and tested on 26.3), Swift 6 (strict concurrency), SwiftUI only, no UIKit unless unavoidable.

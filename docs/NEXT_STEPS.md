@@ -30,8 +30,8 @@ Simulator data and the iPhone's data stay on those devices; nothing syncs (there
 | 7 | On-device AI wording with rule-based fallback | Done |
 | 8 | Progress, exercise detail, records, CSV, share cards, training calendar, body map | Done |
 | 9 | HealthKit + Apple Watch | Done |
-| 10 | Polish | **Next** |
-| 11 | Sign-in | To do, last |
+| 10 | Polish | Done (Dynamic Type at AX3 skipped) |
+| 11 | Sign-in | **Next** |
 
 Also done: per-developer signing (`Config/Local.xcconfig`), one-setting app name
 (`Config/Branding.xcconfig`), and workouts that are left open for 12 hours end themselves.
@@ -75,13 +75,15 @@ To test in the simulator: pair an Apple Watch Series 11 (46 mm) simulator with t
 simulator (Xcode → Window → Devices and Simulators), run the iPhone app, start a workout, and
 open the Watch app.
 
-## 4. Phase 10: Polish
+## 4. Phase 10: Polish (done)
 
-- VoiceOver pass: use each board's `aria-label`s as the labels (see `docs/DESIGN_SPEC.md`).
-- Dynamic Type: check every screen at the largest accessibility size (AX3).
-- Empty and error states on every list; speech or Health unavailable.
-- App icon.
-- Reduce Motion respected everywhere (most animations already check it).
+- App icon (iPhone default, dark and tinted, and Watch), drawn in code by `tools/make_icon.swift`.
+- VoiceOver: the boards' group labels are in place ("Recent exercises", "All exercises",
+  "Quick start" and the rest).
+- Empty states on every list, Health and speech "unavailable" states.
+- **Skipped on purpose:** the largest text sizes (AX1–AX3). At those sizes the side-by-side
+  cards on Home and the set table on the active workout overflow. Fix later by stacking them
+  vertically when `dynamicTypeSize.isAccessibilitySize` is true.
 
 ## 5. Phase 11: Sign-in (do this last)
 

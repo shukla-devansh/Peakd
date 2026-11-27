@@ -66,6 +66,16 @@ final class HealthService {
         _ = try await builder.finishWorkout()
     }
 
+    /// Launches the Watch app with a strength-training configuration; the Watch starts its
+    /// HKWorkoutSession for live heart rate in WKApplicationDelegate.handle(_:).
+    func startWatchApp() async {
+        guard Self.isAvailable else { return }
+        let configuration = HKWorkoutConfiguration()
+        configuration.activityType = .traditionalStrengthTraining
+        configuration.locationType = .indoor
+        try? await store.startWatchApp(toHandle: configuration)
+    }
+
     // MARK: Reading
 
     private static let bpm = HKUnit.count().unitDivided(by: .minute())

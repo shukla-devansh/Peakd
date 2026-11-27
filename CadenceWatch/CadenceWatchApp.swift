@@ -2,12 +2,31 @@
 //  watchOS companion (Watch board): Live workout, Edit set (Digital Crown) and Rest.
 //  The iPhone owns the workout; the Watch mirrors it and logs sets back.
 
+import HealthKit
 import SwiftUI
 import WatchKit
 
+/// Launches that don't come through the UI: the iPhone starting a workout, and the system
+/// relaunching the app mid-workout.
+@MainActor
+final class WatchAppDelegate: NSObject, WKApplicationDelegate {
+    func applicationDidFinishLaunching() {
+        WatchConnector.shared.activate()
+    }
+
+    func handle(_ workoutConfiguration: HKWorkoutConfiguration) {
+        WatchConnector.shared.startFromPhone(workoutConfiguration)
+    }
+
+    func handleActiveWorkoutRecovery() {
+        WatchConnector.shared.recoverWorkout()
+    }
+}
+
 @main
 struct CadenceWatchApp: App {
-    @State private var connector = WatchConnector()
+    @WKApplicationDelegateAdaptor(WatchAppDelegate.self) private var appDelegate
+    @State private var connector = WatchConnector.shared
 
     var body: some Scene {
         WindowGroup {
@@ -195,8 +214,12 @@ struct WatchEditSetView: View {
                 .fixedSize(horizontal: false, vertical: true)
             Button {
                 let kg = state.tracksWeight ? WeightFormatter.kilograms(from: weight, in: state.unit) : nil
-                connector.send(.logSet(weightKg: kg, reps: max(1, Int(reps)), voice: voice != nil))
-                WKInterfaceDevice.current().play(.success)
+                if let target = state.target {
+                    connector.send(.logSet(weightKg: kg, reps: max(1, Int(reps)), voice: voice != nil, target: target))
+                    WKInterfaceDevice.current().play(.success)
+                } else {
+                    WKInterfaceDevice.current().play(.failure)
+                }
                 dismiss()
             } label: {
                 Label("Save set", systemImage: "checkmark").frame(maxWidth: .infinity)
@@ -283,8 +306,8 @@ struct WatchRestView: View {
                 Text(next).font(.cadLabel).foregroundStyle(Palette.textSecondary).lineLimit(1).minimumScaleFactor(0.7)
             }
             HStack(spacing: 6) {
-                Button("+15") { connector.send(.adjustRest(seconds: 15)) }
-                Button("Skip") { connector.send(.skipRest) }
+                Button("+15") { connector.send(.adjustRest(seconds: 15, sentAt: .now)) }
+                Button("Skip") { connector.send(.skipRest(sentAt: .now)) }
                     .tint(Palette.accent)
             }
         }

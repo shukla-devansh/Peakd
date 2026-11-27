@@ -31,7 +31,7 @@ Simulator data and the iPhone's data stay on those devices; nothing syncs (there
 | 8 | Progress, exercise detail, records, CSV, share cards, training calendar, body map | Done |
 | 9 | HealthKit + Apple Watch | Done |
 | 10 | Polish | Done (Dynamic Type at AX3 skipped) |
-| 11 | Sign-in | **Next** |
+| 11 | Sign-in | Skipped for now |
 
 Also done: per-developer signing (`Config/Local.xcconfig`), one-setting app name
 (`Config/Branding.xcconfig`), and workouts that are left open for 12 hours end themselves.

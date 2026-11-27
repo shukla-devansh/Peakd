@@ -122,6 +122,15 @@ private struct ProfileForm: View {
                 }
             } header: {
                 ProfileSectionHeader("Apple")
+            } footer: {
+                // iOS never shows the Health sheet twice, and Settings can't open on the app's
+                // Health page, so say where the switches are.
+                if permissions.state(.health) == .denied {
+                    Text("To turn on Apple Health: Settings → Privacy & Security → Health → \(AppInfo.name), then turn on all categories.")
+                        .font(.cadFootnote)
+                        .foregroundStyle(Palette.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             .listRowBackground(Palette.surface)
 

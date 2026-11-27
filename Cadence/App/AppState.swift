@@ -77,7 +77,9 @@ final class AppState {
             state.restEnd = end
             state.restTotalSeconds = rest.totalSeconds
             if let info = rest.info {
-                let parts = [info.nextSet.map { "set \($0)" }, info.upNextValue].compactMap { $0 }
+                // Name the exercise when the next set starts a new one: "Next: Bench press · set 1".
+                let exercise = info.nextExercise.flatMap { $0 == info.exerciseName ? nil : $0 }
+                let parts = [exercise, info.nextSet.map { "set \($0)" }, info.upNextValue].compactMap { $0 }
                 state.nextText = parts.isEmpty ? nil : "Next: " + parts.joined(separator: " · ")
             }
         }
@@ -128,11 +130,12 @@ final class AppState {
                     workout.avgHR = heartRate.average
                     workout.maxHR = heartRate.max
                 }
-                if let energy = healthEnergy ?? liveEnergy { workout.activeEnergy = energy }
+                if let energy = healthEnergy ?? liveEnergy, energy >= 1 { workout.activeEnergy = energy }
                 try? workout.modelContext?.save()
             }
             // Only add the Watch's energy when Health doesn't already have it, so it isn't counted twice.
-            try? await health.saveWorkout(start: start, end: end, activeEnergyKcal: healthEnergy == nil ? liveEnergy : nil)
+            try? await health.saveWorkout(start: start, end: end,
+                                          activeEnergyKcal: healthEnergy == nil && (liveEnergy ?? 0) >= 1 ? liveEnergy : nil)
         }
     }
 

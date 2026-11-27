@@ -104,7 +104,7 @@ struct WatchLiveView: View {
                     }
                     Text(state.setText)
                         .font(Font.cadHeadline.monospacedDigit())
-                    if let kcal = connector.activeEnergyKcal {
+                    if let kcal = connector.activeEnergyKcal, kcal >= 1 {
                         Text("\(Int(kcal.rounded())) kcal").font(.cadLabel).foregroundStyle(Palette.textSecondary)
                     }
                     HStack(spacing: 6) {
@@ -162,14 +162,18 @@ struct WatchEditSetView: View {
     @Environment(\.dismiss) private var dismiss
 
     private enum Field: Hashable { case weight, reps }
-    @FocusState private var focus: Field?
+    /// The box the Crown is changing. One Crown binding drives whichever box is selected:
+    /// two bindings on two boxes only ever moved the focused one, so reps never changed.
+    @State private var selected: Field = .weight
+    @State private var crown: Double = 0
+    @FocusState private var crownFocused: Bool
     @State private var weight: Double = 0     // in the display unit
     @State private var reps: Double = 0
     /// Fields dictation didn't catch, until the Crown sets them.
     @State private var needed: Set<VoiceParseResult.Field> = []
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             if let voice {
                 Text("“\(voice.transcript)”")
                     .font(.cadLabel)
@@ -180,19 +184,15 @@ struct WatchEditSetView: View {
             HStack(spacing: 6) {
                 if state.tracksWeight {
                     box("Weight", value: weight.formatted(.number.precision(.fractionLength(0...1))), unit: state.unit.symbol,
-                    field: .weight, isNeeded: needed.contains(.weight))
-                        .digitalCrownRotation($weight, from: 0, through: state.unit == .kg ? 500 : 1100,
-                                              by: step, sensitivity: .low, isContinuous: false, isHapticFeedbackEnabled: true)
+                        field: .weight, isNeeded: needed.contains(.weight))
                 }
                 box("Reps", value: "\(Int(reps))", unit: "reps", field: .reps, isNeeded: needed.contains(.reps))
-                    .digitalCrownRotation($reps, from: 1, through: 100, by: 1, sensitivity: .low,
-                                          isContinuous: false, isHapticFeedbackEnabled: true)
             }
-            Text(focus == .reps ? "Turn the Crown to change reps" : "Turn the Crown to change weight")
+            Text(selected == .reps ? "Turn the Crown to change reps" : "Turn the Crown to change weight")
                 .font(.cadLabel)
                 .foregroundStyle(Palette.textSecondary)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
             Button {
                 let kg = state.tracksWeight ? WeightFormatter.kilograms(from: weight, in: state.unit) : nil
                 connector.send(.logSet(weightKg: kg, reps: max(1, Int(reps)), voice: voice != nil))
@@ -204,18 +204,40 @@ struct WatchEditSetView: View {
             .tint(Palette.accent)
             .disabled(!needed.isEmpty)
         }
+        // Anchor to the top so nothing slides up under the navigation title on small Watches.
+        .frame(maxHeight: .infinity, alignment: .top)
         .onAppear {
             let kg = voice?.weightKg ?? state.weightKg
             weight = kg.map { WeightFormatter.displayValue(kg: $0, in: state.unit) } ?? 0
             reps = Double(voice?.reps ?? state.reps ?? 8)
             needed = voice?.missing ?? []
             // Point the Crown at whatever dictation missed.
-            if needed.contains(.weight) && state.tracksWeight { focus = .weight }
-            else if needed.contains(.reps) { focus = .reps }
-            else { focus = state.tracksWeight ? .weight : .reps }
+            if needed.contains(.weight) && state.tracksWeight { selected = .weight }
+            else if needed.contains(.reps) { selected = .reps }
+            else { selected = state.tracksWeight ? .weight : .reps }
+            crown = selected == .weight ? weight : reps
+            crownFocused = true
         }
-        .onChange(of: weight) { needed.remove(.weight) }
-        .onChange(of: reps) { needed.remove(.reps) }
+        // The one Crown binding for the whole screen; its range follows the selected box.
+        .focusable()
+        .focused($crownFocused)
+        .focusEffectDisabled()
+        .digitalCrownRotation($crown, from: crownRange.lowerBound, through: crownRange.upperBound,
+                              by: selected == .weight ? step : 1, sensitivity: .medium,
+                              isContinuous: false, isHapticFeedbackEnabled: true)
+        .onChange(of: crown) { _, value in
+            switch selected {
+            case .weight:
+                if abs(value - weight) > 0.001 { weight = value; needed.remove(.weight) }
+            case .reps:
+                let r = value.rounded()
+                if r != reps { reps = r; needed.remove(.reps) }
+            }
+        }
+        .onChange(of: selected) { _, field in
+            crown = field == .weight ? weight : reps
+            crownFocused = true
+        }
         // Exercise and set go in the navigation bar, beside the back button.
         .navigationTitle(state.setNumber.map { "Set \($0)" } ?? "Set")
         .accessibilityElement(children: .contain)
@@ -224,11 +246,24 @@ struct WatchEditSetView: View {
 
     private var step: Double { WeightFormatter.step(for: state.unit) }
 
+    private var crownRange: ClosedRange<Double> {
+        selected == .weight ? 0...(state.unit == .kg ? 500 : 1100) : 1...100
+    }
+
+    /// VoiceOver swipe up/down on a box, and the same steps as the Crown.
+    private func adjust(_ field: Field, by direction: Double) {
+        switch field {
+        case .weight: weight = min(max(weight + direction * step, 0), state.unit == .kg ? 500 : 1100); needed.remove(.weight)
+        case .reps: reps = min(max(reps + direction, 1), 100); needed.remove(.reps)
+        }
+        if selected == field { crown = field == .weight ? weight : reps }
+    }
+
     private func box(_ label: String, value: String, unit: String, field: Field, isNeeded: Bool) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(label).font(.cadLabel).foregroundStyle(Palette.textSecondary)
             Text(isNeeded ? "?" : value)
-                .font(.system(size: 26, weight: .bold))
+                .font(.system(size: 24, weight: .bold))
                 .monospacedDigit()
                 .foregroundStyle(isNeeded ? Palette.warning : Palette.text)
             if isNeeded {
@@ -239,14 +274,22 @@ struct WatchEditSetView: View {
                 Text(unit).font(.cadLabel).foregroundStyle(Palette.textSecondary)
             }
         }
-        .padding(8)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Palette.elevated, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous)
-            .strokeBorder(focus == field ? Palette.accent : Palette.line, lineWidth: focus == field ? 2 : 1))
-        .focusable()
-        .focused($focus, equals: field)
-        .onTapGesture { focus = field }
+            .strokeBorder(selected == field ? Palette.accent : Palette.line, lineWidth: selected == field ? 2 : 1))
+        .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .onTapGesture { selected = field }
+        .accessibilityAddTraits(selected == field ? [.isSelected, .isButton] : .isButton)
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment: adjust(field, by: 1)
+            case .decrement: adjust(field, by: -1)
+            @unknown default: break
+            }
+        }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(isNeeded ? "\(label), needed" : "\(label) \(value) \(unit)")
         .accessibilityHint("Turn the Digital Crown to change it")
